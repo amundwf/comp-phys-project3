@@ -24,12 +24,21 @@ vec gForceVector(double G, double mass1, double mass2, vec pos1, vec pos2){
     return forceVector;
 }
 
-/*
-void run_forwardEuler(){
+
+mat run_forwardEuler(double tFinal, double dt, double G){
+    // This function returns an Nx7 matrix where the columns contain the solution
+    // data points (t, x, y, z, vx, vy, vz) (positions and velocities and their corresponding
+    // times) gotten from forward Euler. N is the number of timesteps.
+
     // Here: Choose the x-y plane as the orbit plane of Earth. Then the
     // angular momentum vector (omega) of Earth in orbit will point in the positive
     // z direction.
     vec omegaDirection = vec("0 0 1");
+
+    int N = round(tFinal/dt);   // Number of timesteps.
+    cout << "Number of timesteps: N = " << N << endl;
+    vec tList = vec(N);
+    for(int i=0; i<=N-1; i++){tList(i) = i*dt;}
 
     // Initial position of Earth:
     vec initialPosition = vec("1 0 0");
@@ -43,7 +52,10 @@ void run_forwardEuler(){
     double R_E = 1.;    // Earth orbit radius (1 AU).
     
     double m_S = 1.; // Solar mass in units of solar masses.
+    //double m_S = m_S_SI;
     double m_E = m_E_SI/m_S_SI;     // Earth mass in units of solar masses.
+    //double m_E = m_E_SI;
+
     double T_E = 1.; // Orbit period of Earth: 1 year.
     double omega_E = (2*M_PI)/T_E; // Angular frequency of Earth's orbit (radians).
     double v_E = (2*M_PI*R_E)/T_E;  // Orbital speed of Earth (approximately constant along the
@@ -52,23 +64,83 @@ void run_forwardEuler(){
     // is perpendicular to both the angular momentum and the position in the orbit.
     vec initialVelocity = v_E * v_E_dir;
 
+    //double GM_s = 4*M_PI*M_PI; // AU^3/yr^2 (from centripetal acceleration)
+
     // Initialize positions and velocities:
     vec position = initialPosition; // <-- An example of the starting position of Earth;
     // 1 AU away from the Sun in the x direction.
     vec velocity = initialVelocity;
     
-    double G = 6.67e-11; // N m^2/kg^2. Gravitational constant.
-    // Initialize acceleration (from Newton's 2nd law):
-    double Fx, Fy, Fz;
-    vec F = gForceVector(G, m_E, m_S, initialPosition, sunPosition);
+    
+    // Initialize acceleration vector (from Newton's 2nd law):
+    vec FVec = gForceVector(G, m_E, m_S, initialPosition, sunPosition);
+    vec initialAcc = FVec/m_E; // The acceleration of Earth (from Newton's 2nd law).
+    vec acceleration = initialAcc;
 
-    // Initialize forces
-    double Fx,Fy,Fz,Fxnew,Fynew,Fznew; // Forces in each dimension
+    mat results = mat(N, 7); // Columns: t, x, y, z, vx, vy, vz
+    results.col(0) = tList; // Insert the time list in the results matrix.
+    results(0, span(1,3)) = initialPosition.t();
+    results(0, span(4,6)) = initialVelocity.t();
+
+    // Perform the forward Euler algorithm:
+    for(int i=1; i<=N-1; i++){
+        // Update the position using the previous position and velocity:
+        position = position + dt*velocity;
+
+        // Update the velocity using the acceleration:
+        velocity = velocity + dt*acceleration;
+
+        results(i, span(1,3)) = position.t(); // Transpose the vectors in order
+        // to paste them into the row.
+        results(i, span(4,6)) = velocity.t();
+
+        // Update the acceleration for the next time step (to update
+        // the velocity):
+        
+        FVec = gForceVector(G, m_E, m_S, position, sunPosition);
+        //FVec = gForceVector(G, m_E, m_S, position, sunPosition) * (1/2.976e-19); // Debugging (the factor is to check if G must be of other units.)
+        acceleration = FVec/m_E;
+    }
+
+    return results;
+}
+
+void writeMatrixToFile(mat results, string filename, string directory){
+    // Write the results (an Nx7 matrix) from an ODE solver to
+    // a text file with 7 columns.
+    // filename: The full name of the file, e.g. "data.txt".
+    // directory: Specify the directory where the file is to be saved. E.g.
+    // "../results/3a_earth_sun_system/" (include the final slash).
+    
+    ofstream ofile;
+    string filePath = directory + filename;
+
+    // Save matrix in CSV format with a header:
+    field<string> header(results.n_cols);
+    header(0) = "t"; header(1) = "x"; header(2) = "y"; header(3) = "z";
+    header(4) = "vx"; header(5) = "vy"; header(6) = "vz";
+    //results.save(csv_name("results.csv", header));
+    results.save(csv_name(filePath, header));
+}
+
+/*
+void run_velocityVerlet(double tFinal, double dt, double G){
+
 }
 */
 
+void task_3a_forwardEuler(double G){
+    // This runs problem 3a with the forward Euler algorithm.
+    double tFinal = 10;
+    double dt = 1e-4;
+    mat resultsEuler = run_forwardEuler(tFinal, dt, G);
+    string filename = "earth_sun_euler.csv";
+    string directory = "../results/3a_earth_sun_system/";
+    writeMatrixToFile(resultsEuler, filename, directory);
+}
+
 /*
-void run_velocityVerlet(){
+void 3a_velocityVerlet(double G){
 
 }
 */

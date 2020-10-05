@@ -8,11 +8,10 @@ using namespace std;
 using namespace arma;
 
 int main(){
-    double G = 6.67e-11;
-
-    //run_forwardEuler();
-    vec force1 = gForceVector(G, 1/double(1000000), 1, vec("1 0 0"), vec("0 0 0"));
-    force1.print("force1:");
+    double G = 4*M_PI*M_PI; // The gravitational constant when having replaced the units
+    // kg, meters and seconds by the units solar masses, astronomical units and years, respectively.
+    
+    task_3a_forwardEuler(G);
 
     //run_velocityVerlet();
 
