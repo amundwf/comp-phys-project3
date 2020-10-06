@@ -12,7 +12,7 @@ planet::planet()
     velocity[2] = 0.;
     potential = 0.;
     kinetic = 0.;
-    vec forceVector(3);
+    vec forceVector = vec(3);
 }
 
 planet::planet(double M, double x, double y, double z, double vx, double vy, double vz)
@@ -28,7 +28,7 @@ planet::planet(double M, double x, double y, double z, double vx, double vy, dou
     kinetic = 0.;
 }
 
-planet::gForceVector(planet &otherPlanet){
+planet::gForceVector(planet otherPlanet){
     // This returns the gravitational force *on* object 1 *from* object 2. Object 1
     // is pulled towards object 2.
     // Example: In sun-earth problem for the Earth orbit, the Earth is object 1 and

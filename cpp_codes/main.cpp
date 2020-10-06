@@ -15,5 +15,7 @@ int main(){
 
     task_3a_velocityVerlet(G);
 
+    //task_3b_velocityVerlet();
+
     return 0;
 }

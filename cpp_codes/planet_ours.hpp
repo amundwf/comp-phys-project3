@@ -18,7 +18,7 @@ public:
     // Functions
     planet();
     planet(double M, double x, double y, double z, double vx, double vy, double vz);
-    gForceVec();
+    gForceVec(planet otherPlanet);
 };
 
 #endif

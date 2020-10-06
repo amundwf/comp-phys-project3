@@ -1,4 +1,5 @@
-#include "utils.hpp" 
+#include "utils.hpp"
+#include "solver_ours.hpp" 
 #include <iostream>
 #include <cmath>
 #include <armadillo>
@@ -204,4 +205,14 @@ void task_3a_velocityVerlet(double G){
     string filename = "earth_sun_verlet.csv";
     string directory = "../results/3a_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
+}
+
+void task_3b_velocityVerlet(){
+
+    solver my_solver;
+
+    my_solver.add(planet1);
+    my_solver.add(planet2);
+
+    
 }
