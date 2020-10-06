@@ -1,6 +1,9 @@
 #include "planet_ours.hpp"
 #include <armadillo>
 
+using namespace arma;
+using namespace std;
+
 planet::planet()
 {
     mass = 1.;
@@ -12,7 +15,9 @@ planet::planet()
     velocity[2] = 0.;
     potential = 0.;
     kinetic = 0.;
-    vec forceVector = vec(3);
+    vec forceVector = zeros<vec>(3);
+    vec previous_acceleration = zeros<vec>(3);
+
 }
 
 planet::planet(double M, double x, double y, double z, double vx, double vy, double vz)

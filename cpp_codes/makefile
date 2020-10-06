@@ -1,7 +1,7 @@
 all: compile run
 
 compile:
-	g++ -o main.out main.cpp utils.cpp -larmadillo #solver.cpp planet.cpp
+	g++ -o main.out main.cpp utils.cpp -larmadillo
 
 run:
 	./main.out

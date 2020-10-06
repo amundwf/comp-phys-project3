@@ -18,10 +18,7 @@ solver::add(planet &otherPlanet){
 solver::run_velocityVerlet(double tFinal, double dt, double G){
 
     int N = round(tFinal/dt);   // Number of timesteps.
-
-    // make a matrix for the acceleration to be stored.
-    vec acceleration = zeros<vec>(total_planets*3);
-    vec previous_acceleration = zeros<vec>(total_planets*3);
+    int dims = 3;
 
     // Loop for each time step.
     for(int i=1; i<=N-1; i++){
@@ -38,14 +35,18 @@ solver::run_velocityVerlet(double tFinal, double dt, double G){
                 // This is the other planet we are comparing current to.
                 planet &other = all_planets[k];
                 planet::gForceVector(other);
+            }
 
-            previous_acceleration = acceleration();
-            previous_acceleration = current.ForceVector/current.mass; 
+            // Evaluate the current position, acceleration and velocity for 
+            // the current planet.
+            current.previous_acceleration = current.acceleration
+            current.previous_acceleration = current.ForceVector[d]/current.mass;
+            current.position += dt*velocity + 0.5*dt*dt*previous_acceleration;
             
-            previous_acceleration = acceleration;
-
-            // Evaluate the current position, acceleration and velocity.
-            position += dt*velocity + 0.5*dt*dt*previous_acceleration;
+            
+            
+            
+            
             acceleration = gForceVector(G, m_E, m_S, position, sunPosition)/m_E;
             velocity += 0.5*dt*(acceleration + previous_acceleration);
 

@@ -196,7 +196,7 @@ void task_3a_forwardEuler(double G){
     string directory = "../results/3a_earth_sun_system/";
     writeMatrixToFile(resultsEuler, filename, directory);
 }
-
+/*
 void task_3a_velocityVerlet(double G){
     // Runs the problem 3a with velocity verlet algorithm.
     double tFinal = 10;
@@ -214,5 +214,6 @@ void task_3b_velocityVerlet(){
     my_solver.add(planet1);
     my_solver.add(planet2);
 
-    
+
 }
+*/

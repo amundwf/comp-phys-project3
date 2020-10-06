@@ -11,6 +11,9 @@ public:
     arma::vec position(3);
     arma::vec velocity(3);
     arma::vec forceVector(3);
+    arma::vec previous_acceleration(3);
+    arma::vec acceleration(3);
+    
     double mass;
     double potential;
     double kinetic;
