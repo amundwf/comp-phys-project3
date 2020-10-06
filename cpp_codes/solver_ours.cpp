@@ -40,7 +40,7 @@ solver::run_velocityVerlet(double tFinal, double dt, double G){
                 planet::gForceVector(other);
 
             previous_acceleration = acceleration();
-            acceleration.row(k) = current.ForceVector/current.mass; 
+            previous_acceleration = current.ForceVector/current.mass; 
             
             previous_acceleration = acceleration;
 
