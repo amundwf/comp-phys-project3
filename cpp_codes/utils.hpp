@@ -17,6 +17,6 @@ arma::mat run_velocityVerlet(double tFinal, double dt, double G);
 
 void task_3a_forwardEuler(double G);
 
-//void task_3a_velocityVerlet(double G);
+void task_3a_velocityVerlet(double G);
 
 #endif 

@@ -123,11 +123,68 @@ void writeMatrixToFile(mat results, string filename, string directory){
     results.save(csv_name(filePath, header));
 }
 
-/*
-void run_velocityVerlet(double tFinal, double dt, double G){
 
+mat run_velocityVerlet(double tFinal, double dt, double G){
+    vec omegaDirection = vec("0 0 1");
+
+    int N = round(tFinal/dt);   // Number of timesteps.
+    cout << "Number of timesteps: N = " << N << endl;
+    vec tList = vec(N);
+    for(int i=0; i<=N-1; i++){tList(i) = i*dt;}
+
+    // Initial position of Earth:
+    vec initialPosition = vec("1 0 0");
+
+    vec sunPosition = vec("0 0 0"); // The sun is at the center and approximately
+    // doesn't move because of its relatively large mass.
+
+    // Masses of Sun and Earth in SI units (kg):
+    double m_S_SI = 1.989e30;
+    double m_E_SI = 5.972e24;
+    double R_E = 1.;    // Earth orbit radius (1 AU).
+    
+    double m_S = 1.; // Solar mass in units of solar masses.
+    double m_E = m_E_SI/m_S_SI;     // Earth mass in units of solar masses.
+
+    double T_E = 1.; // Orbit period of Earth: 1 year.
+    double omega_E = (2*M_PI)/T_E; // Angular frequency of Earth's orbit (radians).
+    double v_E = (2*M_PI*R_E)/T_E;  // Orbital speed of Earth (approximately constant along the
+    // entire orbit since the orbit is approximately circular).
+    vec v_E_dir = cross(omegaDirection, initialPosition) / norm(cross(omegaDirection, initialPosition)); // The direction of the orbital velocity
+    // is perpendicular to both the angular momentum and the position in the orbit.
+    vec initialVelocity = v_E * v_E_dir;
+
+    // Initialize positions and velocities:
+    vec position = initialPosition; // <-- An example of the starting position of Earth;
+    // 1 AU away from the Sun in the x direction.
+    vec velocity = initialVelocity;
+
+    // Initialize acceleration vector (from Newton's 2nd law):
+    vec FVec = gForceVector(G, m_E, m_S, initialPosition, sunPosition);
+    vec initialAcc = FVec/m_E; // The acceleration of Earth (from Newton's 2nd law).
+    vec acceleration = initialAcc;
+
+    mat results = mat(N, 7); // Columns: t, x, y, z, vx, vy, vz
+    results.col(0) = tList; // Insert the time list in the results matrix.
+    results(0, span(1,3)) = initialPosition.t();
+    results(0, span(4,6)) = initialVelocity.t();
+
+    vec previous_acceleration;
+    // Perform the velocity Verlet algorithm:
+    for(int i=1; i<=N-1; i++){
+        previous_acceleration = acceleration;
+
+        // Evaluate the current position, acceleration and velocity.
+        position += dt*velocity + 0.5*dt*dt*previous_acceleration;
+        acceleration = gForceVector(G, m_E, m_S, position, sunPosition)/m_E;
+        velocity += 0.5*dt*(acceleration + previous_acceleration);
+
+        results(i, span(1,3)) = position.t(); // Transpose the vectors in order
+        results(i, span(4,6)) = velocity.t();
+
+    }
+    return results;
 }
-*/
 
 void task_3a_forwardEuler(double G){
     // This runs problem 3a with the forward Euler algorithm.
@@ -139,8 +196,13 @@ void task_3a_forwardEuler(double G){
     writeMatrixToFile(resultsEuler, filename, directory);
 }
 
-/*
-void 3a_velocityVerlet(double G){
 
+void task_3a_velocityVerlet(double G){
+    // Runs the problem 3a with velocity verlet algorithm.
+    double tFinal = 10;
+    double dt = 1e-4;
+    mat resultsVerlet = run_velocityVerlet(tFinal, dt, G);
+    string filename = "earth_sun_verlet.csv";
+    string directory = "../results/3a_earth_sun_system/";
+    writeMatrixToFile(resultsVerlet, filename, directory); 
 }
-*/
