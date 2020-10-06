@@ -13,7 +13,7 @@ int main(){
     
     task_3a_forwardEuler(G);
 
-    //run_velocityVerlet();
+    task_3a_velocityVerlet(G);
 
     return 0;
 }
