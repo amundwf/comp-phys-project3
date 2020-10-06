@@ -196,7 +196,6 @@ void task_3a_forwardEuler(double G){
     writeMatrixToFile(resultsEuler, filename, directory);
 }
 
-
 void task_3a_velocityVerlet(double G){
     // Runs the problem 3a with velocity verlet algorithm.
     double tFinal = 10;
