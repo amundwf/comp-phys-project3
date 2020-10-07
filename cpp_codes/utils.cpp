@@ -207,12 +207,15 @@ void task_3a_velocityVerlet(double G){
     writeMatrixToFile(resultsVerlet, filename, directory); 
 }
 /*
-void task_3b_velocityVerlet(){
+void task_3b_velocityVerlet(double G){
+    double tFinal = 10;
+    double dt = 1e-4;
 
     Solver my_solver;
-
+    my_solver.init();
     my_solver.add(planet1);
     my_solver.add(planet2);
+    my_solver.run_velocityVerlet(tFinal, dt, G);
 
 
 }
