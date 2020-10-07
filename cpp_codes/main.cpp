@@ -1,7 +1,5 @@
 #include <iostream>
 #include <cmath>
-//#include "planet.hpp"
-//#include "solver.hpp"
 #include "utils.hpp"
 
 using namespace std;

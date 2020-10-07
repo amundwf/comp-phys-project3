@@ -1,56 +1,72 @@
-#include "solver.hpp"
-#include "planet.hpp"
+#include "solver_our.hpp"
+#include "planet_ours.hpp"
 #include <iostream>
 #include <cmath>
 #include "time.h"
 
-solver::init(){
+void Solver::init(){
     vector<planet> all_planets;
-    int total_planets;
-
+    int total_planets = 0;
 }
 
-solver::add(planet &otherPlanet){
+void Solver::add(planet &otherPlanet){
     all_planets.pushback(otherPlanet)
     total_planets += 1;
 }
 
-solver::run_velocityVerlet(double tFinal, double dt, double G){
+void Solver::run_velocityVerlet(double tFinal, double dt, double G){
 
     int N = round(tFinal/dt);   // Number of timesteps.
     int dims = 3;
 
+    // Calculate the initial acceleration of all planets.
+    for (int j=0; j<total_planets; j++){
+        planet &current = all_planets[j];
+
+        // Calculate force between current and all other planets.
+        for (int k=0; k<total_planets; k++){
+            // Skip if j == k.
+            if (j==k){
+                continue;
+            }
+
+            // This is the other planet we are comparing current to.
+            planet &other = all_planets[k];
+            planet::gForceVector(other);
+            current.acceleration = current.forceVector / current.mass;
+        }
+    }
     // Loop for each time step.
     for(int i=1; i<=N-1; i++){
-        // Loop for each planet.
+
+        // Evaluate the new position for all planets.
         for (int j=0; j<total_planets; j++){
-            // This is the current planet whose position and velocity we 
-            // will be updating. 
+            planet &current = all_planets[j];
+            current.previous_acceleration = current.acceleration;
+            current.position += dt*current.velocity + 0.5*dt*dt*current.previous_acceleration;
+        }
+
+        // Evaluate the new acceleration for all planets.
+        for (int j=0; j<total_planets; j++){
             planet &current = all_planets[j];
 
-            // Calculate force between current and all other planets.
-            // not sure about the j+1, it means we don't find the force of
-            // it on itself. but then it misses the planets before it.
-            for (int k = j+1; k<total_planets; k++){
+            // Calculate the force between current and all other planets.
+            for (int k=0; k<total_planets; k++){
+                // Skip if j == k.
+                if (j==k){
+                    continue;
+                }
                 // This is the other planet we are comparing current to.
                 planet &other = all_planets[k];
                 planet::gForceVector(other);
+                current.acceleration = current.forceVector / current.mass;
             }
+        }
 
-            // Evaluate the current position, acceleration and velocity for 
-            // the current planet.
-            current.previous_acceleration = current.acceleration
-            current.previous_acceleration = current.ForceVector[d]/current.mass;
-            current.position += dt*velocity + 0.5*dt*dt*previous_acceleration;
-            
-            
-            
-            
-            
-            acceleration = gForceVector(G, m_E, m_S, position, sunPosition)/m_E;
-            velocity += 0.5*dt*(acceleration + previous_acceleration);
-
-            }
+        // Evaluate the new velocity for all planets.
+        for (int j=0; j<total_planets; j++){
+            planet &current = all_planets[j];
+            current.velocity += 0.5*dt*(current.acceleration + current.previous_acceleration);
         }
     }
 }

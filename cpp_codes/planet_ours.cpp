@@ -4,22 +4,6 @@
 using namespace arma;
 using namespace std;
 
-planet::planet()
-{
-    mass = 1.;
-    position[0] = 1.;
-    position[1] = 0.;
-    position[2] = 0.;
-    velocity[0] = 0.;
-    velocity[1] = 0.;
-    velocity[2] = 0.;
-    potential = 0.;
-    kinetic = 0.;
-    vec forceVector = zeros<vec>(3);
-    vec previous_acceleration = zeros<vec>(3);
-
-}
-
 planet::planet(double M, double x, double y, double z, double vx, double vy, double vz)
 {
     mass = M;
@@ -31,6 +15,9 @@ planet::planet(double M, double x, double y, double z, double vx, double vy, dou
     velocity[2] = vz;
     potential = 0.;
     kinetic = 0.;
+    vec forceVector = zeros<vec>(3);
+    vec previous_acceleration = zeros<vec>(3);
+    vec acceleration = zeros<vec>(3);
 }
 
 planet::gForceVector(planet otherPlanet){

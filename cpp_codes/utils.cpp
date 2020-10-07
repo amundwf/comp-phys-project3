@@ -1,5 +1,5 @@
 #include "utils.hpp"
-#include "solver_ours.hpp" 
+//#include "solver_ours.hpp" 
 #include <iostream>
 #include <cmath>
 #include <armadillo>
@@ -196,7 +196,7 @@ void task_3a_forwardEuler(double G){
     string directory = "../results/3a_earth_sun_system/";
     writeMatrixToFile(resultsEuler, filename, directory);
 }
-/*
+
 void task_3a_velocityVerlet(double G){
     // Runs the problem 3a with velocity verlet algorithm.
     double tFinal = 10;
@@ -206,7 +206,7 @@ void task_3a_velocityVerlet(double G){
     string directory = "../results/3a_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
 }
-
+/*
 void task_3b_velocityVerlet(){
 
     solver my_solver;
