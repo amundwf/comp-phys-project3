@@ -209,7 +209,7 @@ void task_3a_velocityVerlet(double G){
 /*
 void task_3b_velocityVerlet(){
 
-    solver my_solver;
+    Solver my_solver;
 
     my_solver.add(planet1);
     my_solver.add(planet2);
