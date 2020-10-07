@@ -15,7 +15,7 @@ os.system("./main.out")
 
 # Read the comma-separated data files (two columns, x and y):
 directory = "../results/3a_earth_sun_system/"
-filename = "earth_sun_euler.csv"
+filename = "earth_sun_verlet.csv"
 #filePath = fullfile(directory, filename)
 filePath = os.path.join(directory, filename) # The full file path.
 data = np.loadtxt(filePath, skiprows=1, delimiter=",")
@@ -31,13 +31,12 @@ vxList = data["vx"]
 vyList = data["vy"]
 vzList = data["vz"]
 
-
 plot1, = plt.plot(xList, yList, label='forwardEuler')
 
 plt.grid()
-#plt.xlabel(r'$x$')
-#plt.ylabel(r'$y$')
+plt.xlabel(r'$x$')
+plt.ylabel(r'$y$')
 plt.xlim(-1.5, 1.5)
 plt.ylim(-1.5, 1.5)
-plt.suptitle('Earth-Sun system, forward Euler')
-plt.show() 
+plt.suptitle('Earth-Sun system, velocity Verlet')
+plt.show()

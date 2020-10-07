@@ -24,6 +24,23 @@ vec gForceVector(double G, double mass1, double mass2, vec pos1, vec pos2){
     return forceVector;
 }
 
+void writeMatrixToFile(mat results, string filename, string directory){
+    // Write the results (an Nx7 matrix) from an ODE solver to
+    // a text file with 7 columns.
+    // filename: The full name of the file, e.g. "data.txt".
+    // directory: Specify the directory where the file is to be saved. E.g.
+    // "../results/3a_earth_sun_system/" (include the final slash).
+    
+    ofstream ofile;
+    string filePath = directory + filename;
+
+    // Save matrix in CSV format with a header:
+    field<string> header(results.n_cols);
+    header(0) = "t"; header(1) = "x"; header(2) = "y"; header(3) = "z";
+    header(4) = "vx"; header(5) = "vy"; header(6) = "vz";
+    //results.save(csv_name("results.csv", header));
+    results.save(csv_name(filePath, header));
+}
 
 mat run_forwardEuler(double tFinal, double dt, double G){
     // This function returns an Nx7 matrix where the columns contain the solution
@@ -105,25 +122,6 @@ mat run_forwardEuler(double tFinal, double dt, double G){
     return results;
 }
 
-void writeMatrixToFile(mat results, string filename, string directory){
-    // Write the results (an Nx7 matrix) from an ODE solver to
-    // a text file with 7 columns.
-    // filename: The full name of the file, e.g. "data.txt".
-    // directory: Specify the directory where the file is to be saved. E.g.
-    // "../results/3a_earth_sun_system/" (include the final slash).
-    
-    ofstream ofile;
-    string filePath = directory + filename;
-
-    // Save matrix in CSV format with a header:
-    field<string> header(results.n_cols);
-    header(0) = "t"; header(1) = "x"; header(2) = "y"; header(3) = "z";
-    header(4) = "vx"; header(5) = "vy"; header(6) = "vz";
-    //results.save(csv_name("results.csv", header));
-    results.save(csv_name(filePath, header));
-}
-
-
 mat run_velocityVerlet(double tFinal, double dt, double G){
     vec omegaDirection = vec("0 0 1");
 
@@ -188,19 +186,24 @@ mat run_velocityVerlet(double tFinal, double dt, double G){
 
 void task_3a_forwardEuler(double G){
     // This runs problem 3a with the forward Euler algorithm.
+    cout << "Running forward Euler:\n";
     double tFinal = 10;
     double dt = 1e-4;
+    cout << "tFinal: " << tFinal << " (years) \ndt: " << dt << endl;
+
     mat resultsEuler = run_forwardEuler(tFinal, dt, G);
     string filename = "earth_sun_euler.csv";
     string directory = "../results/3a_earth_sun_system/";
     writeMatrixToFile(resultsEuler, filename, directory);
 }
 
-
 void task_3a_velocityVerlet(double G){
     // Runs the problem 3a with velocity verlet algorithm.
+    cout << "Running velocity Verlet:\n";
     double tFinal = 10;
     double dt = 1e-4;
+    cout << "tFinal: " << tFinal << " (years) \ndt: " << dt << endl;
+
     mat resultsVerlet = run_velocityVerlet(tFinal, dt, G);
     string filename = "earth_sun_verlet.csv";
     string directory = "../results/3a_earth_sun_system/";
