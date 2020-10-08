@@ -14,8 +14,8 @@ os.system("./main.out")
 ###
 
 # Read the comma-separated data files (two columns, x and y):
-directory = "../results/3a_earth_sun_system/"
-filename = "earth_sun_verlet.csv"
+directory = "../results/3f_escape_velocity/"
+filename = "test_escape_verlet.csv"
 #filePath = fullfile(directory, filename)
 filePath = os.path.join(directory, filename) # The full file path.
 data = np.loadtxt(filePath, skiprows=1, delimiter=",")
@@ -36,7 +36,8 @@ plot1, = plt.plot(xList, yList, label='velocityVerlet')
 plt.grid()
 plt.xlabel(r'$x$')
 plt.ylabel(r'$y$')
-plt.xlim(-1.5, 1.5)
-plt.ylim(-1.5, 1.5)
-plt.suptitle('Earth-Sun system, velocity Verlet')
+plt.axis('equal')
+#plt.xlim(-1.5, 1.5)
+#plt.ylim(-1.5, 1.5)
+plt.suptitle('Planet-Sun system, velocity Verlet')
 plt.show()
