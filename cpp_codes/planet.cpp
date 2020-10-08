@@ -1,17 +1,8 @@
 #include "planet.hpp"
+#include <armadillo>
 
-planet::planet()
-{
-    mass = 1.;
-    position[0] = 1.;
-    position[1] = 0.;
-    position[2] = 0.;
-    velocity[0] = 0.;
-    velocity[1] = 0.;
-    velocity[2] = 0.;
-    potential = 0.;
-    kinetic = 0.;
-}
+using namespace arma;
+using namespace std;
 
 planet::planet(double M, double x, double y, double z, double vx, double vy, double vz)
 {
@@ -24,50 +15,22 @@ planet::planet(double M, double x, double y, double z, double vx, double vy, dou
     velocity[2] = vz;
     potential = 0.;
     kinetic = 0.;
+    vec forceVector = zeros<vec>(3);
+    vec previous_acceleration = zeros<vec>(3);
+    vec acceleration = zeros<vec>(3);
 }
 
+planet::gForceVector(planet otherPlanet){
+    // This returns the gravitational force *on* object 1 *from* object 2. Object 1
+    // is pulled towards object 2.
+    // Example: In sun-earth problem for the Earth orbit, the Earth is object 1 and
+    // the Sun is object 2. 
+    // G: gravitational constant.
+    double r = norm(otherPlanet.position - this->position); // Relative distance between the objects.
 
-double planet::distance(planet otherPlanet)
-{
-    double x1,y1,z1,x2,y2,z2,xx,yy,zz;
+    double forceStrength = (G*this->mass*otherPlanet.mass)/(r*r);   // Newton's gravitational law.
 
-    x1 = this->position[0];
-    y1 = this->position[1];
-    z1 = this->position[2];
-
-    x2 = otherPlanet.position[0];
-    y2 = otherPlanet.position[1];
-    z2 = otherPlanet.position[2];
-
-    xx = x1-x2;
-    yy = y1-y2;
-    zz = z1-z2;
-
-    return sqrt(xx*xx + yy*yy + zz*zz);
- }
-
-double planet::GravitationalForce(planet otherPlanet,double Gconst)
-{
-    double r = this->distance(otherPlanet);
-    if(r!=0) return Gconst*this->mass*otherPlanet.mass/(r*r);
-    else return 0;
+    vec forceDirection = (otherPlanet.position-this->position)/norm(otherPlanet.position-this->position);   // This vector points *from*
+    // object 1 and *towards* object 2, meaning that object 1 is influenced by object 2.
+    forceVector += forceStrength * forceDirection;
 }
-
-double planet::Acceleration(planet otherPlanet, double Gconst)
-{
-    double r = this->distance(otherPlanet);
-    if(r!=0) return this->GravitationalForce(otherPlanet,Gconst)/(this->mass*r);
-    else return 0;
-}
-
-double planet::KineticEnergy()
-{
-    double velocity2 = (this->velocity[0]*this->velocity[0]) + (this->velocity[1]*this->velocity[1]) + (this->velocity[2]*this->velocity[2]);
-    return 0.5*this->mass*velocity2;
-}
-
-double planet::PotentialEnergy(planet &otherPlanet, double Gconst, double epsilon)
-{
-    if(epsilon==0.0) return -Gconst*this->mass*otherPlanet.mass/this->distance(otherPlanet);
-    else return (Gconst*this->mass*otherPlanet.mass/epsilon)*(atan(this->distance(otherPlanet)/epsilon) - (0.5*M_PI));
-} 

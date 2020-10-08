@@ -4,28 +4,20 @@
 #include <cmath>
 #include <armadillo>
 
-class planet
-{
+class planet{
 public:
-    // Properties
-    double mass;
-    double position[3];
+    // Parameters
     arma::vec position(3);
     arma::vec velocity(3);
+    arma::vec forceVector(3);
+    arma::vec previous_acceleration(3);
+    arma::vec acceleration(3);
+    double mass;
     double potential;
     double kinetic;
 
-    // Initializers
-    planet();
-    planet(double M, double x, double y, double z, double vx, double vy, double vz);
-
     // Functions
-    double distance(planet otherPlanet);
-    double GravitationalForce(planet otherPlanet, double Gconst);
-    double Acceleration(planet otherPlanet, double Gconst);
-    double KineticEnergy();
-    double PotentialEnergy(planet &otherPlanet, double Gconst, double epsilon);
-
+    planet(double M, double x, double y, double z, double vx, double vy, double vz);
+    gForceVec(planet otherPlanet);
 };
-
 #endif
