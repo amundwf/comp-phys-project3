@@ -25,7 +25,7 @@ vec gForceVector(double G, double mass1, double mass2, vec pos1, vec pos2){
     return forceVector;
 }
 
-
+/*
 mat run_forwardEuler(double tFinal, double dt, double G){
     // This function returns an Nx7 matrix where the columns contain the solution
     // data points (t, x, y, z, vx, vy, vz) (positions and velocities and their corresponding
@@ -105,7 +105,7 @@ mat run_forwardEuler(double tFinal, double dt, double G){
 
     return results;
 }
-/*
+
 void writeMatrixToFile(mat results, string filename, string directory){
     // Write the results (an Nx7 matrix) from an ODE solver to
     // a text file with 7 columns.
@@ -123,7 +123,7 @@ void writeMatrixToFile(mat results, string filename, string directory){
     //results.save(csv_name("results.csv", header));
     results.save(csv_name(filePath, header));
 }
-*/
+
 
 mat run_velocityVerlet(double tFinal, double dt, double G){
     vec omegaDirection = vec("0 0 1");
@@ -206,7 +206,7 @@ void task_3a_velocityVerlet(double G){
     string directory = "../results/3a_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
 }
-
+*/
 void task_3b_velocityVerlet(double G){
     double tFinal = 10;
     double dt = 1e-4;

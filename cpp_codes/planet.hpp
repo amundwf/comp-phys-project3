@@ -7,17 +7,17 @@
 class planet{
 public:
     // Parameters
-    arma::vec position(3);
-    arma::vec velocity(3);
-    arma::vec forceVector(3);
-    arma::vec previous_acceleration(3);
-    arma::vec acceleration(3);
+    arma::vec position;
+    arma::vec velocity;
+    arma::vec forceVector;
+    arma::vec previous_acceleration;
+    arma::vec acceleration;
     double mass;
     double potential;
     double kinetic;
 
     // Functions
-    planet(double M, arma::vec initialPosition, arma::vec initialVelocity);
-    gForceVec(planet otherPlanet);
+    void planet(double M, arma::vec initialPosition, arma::vec initialVelocity);
+    void gForceVec(planet otherPlanet);
 };
 #endif
