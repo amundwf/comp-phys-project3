@@ -8,11 +8,11 @@ using namespace std;
 using namespace arma;
 
 void Solver::init(){
-    vector<planet> all_planets;
+    vector<Planet> all_planets;
     int total_planets = 0;
 }
 
-void Solver::add(planet &newPlanet){
+void Solver::add(Planet &newPlanet){
     all_planets.pushback(newPlanet)
     total_planets += 1;
 }
@@ -24,7 +24,7 @@ void Solver::run_velocityVerlet(double tFinal, double dt, double G){
 
     // Calculate the initial acceleration of all planets.
     for (int j=0; j<total_planets; j++){
-        planet &current = all_planets[j];
+        Planet &current = all_planets[j];
 
         // Calculate force between current and all other planets.
         for (int k=0; k<total_planets; k++){
@@ -34,7 +34,7 @@ void Solver::run_velocityVerlet(double tFinal, double dt, double G){
             }
 
             // This is the other planet we are comparing current to.
-            planet other = all_planets[k];
+            Planet other = all_planets[k];
             current.gForceVector(other);
             current.acceleration = current.forceVector / current.mass;
         }
@@ -44,14 +44,14 @@ void Solver::run_velocityVerlet(double tFinal, double dt, double G){
 
         // Evaluate the new position for all planets.
         for (int j=0; j<total_planets; j++){
-            planet &current = all_planets[j];
+            Planet &current = all_planets[j];
             current.previous_acceleration = current.acceleration;
             current.position += dt*current.velocity + 0.5*dt*dt*current.previous_acceleration;
         }
 
         // Evaluate the new acceleration for all planets.
         for (int j=0; j<total_planets; j++){
-            planet &current = all_planets[j];
+            Planet &current = all_planets[j];
 
             // Calculate the force between current and all other planets.
             for (int k=0; k<total_planets; k++){
@@ -60,7 +60,7 @@ void Solver::run_velocityVerlet(double tFinal, double dt, double G){
                     continue;
                 }
                 // This is the other planet we are comparing current to.
-                planet other = all_planets[k];
+                Planet other = all_planets[k];
                 current.gForceVector(other);
                 current.acceleration = current.forceVector / current.mass;
             }
@@ -68,7 +68,7 @@ void Solver::run_velocityVerlet(double tFinal, double dt, double G){
 
         // Evaluate the new velocity for all planets.
         for (int j=0; j<total_planets; j++){
-            planet &current = all_planets[j];
+            Planet &current = all_planets[j];
             current.velocity += 0.5*dt*(current.acceleration + current.previous_acceleration);
         }
         

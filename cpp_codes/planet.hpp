@@ -4,7 +4,7 @@
 #include <cmath>
 #include <armadillo>
 
-class planet{
+class Planet{
 public:
     // Parameters
     arma::vec position;
@@ -18,6 +18,6 @@ public:
 
     // Functions
     void planet(double M, arma::vec initialPosition, arma::vec initialVelocity);
-    void gForceVec(planet otherPlanet);
+    void gForceVec(Planet otherPlanet);
 };
 #endif

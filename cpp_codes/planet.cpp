@@ -4,8 +4,7 @@
 using namespace arma;
 using namespace std;
 
-planet::planet(double M, vec initialPosition, vec initialVelocity)
-{
+Planet::planet(double M, vec initialPosition, vec initialVelocity){
     mass = M;
     potential = 0.;
     kinetic = 0.;
@@ -16,7 +15,7 @@ planet::planet(double M, vec initialPosition, vec initialVelocity)
     vec acceleration = zeros<vec>(3);
 }
 
-planet::gForceVector(planet otherPlanet){
+Planet::gForceVector(Planet otherPlanet){
     // This returns the gravitational force *on* object 1 *from* object 2. Object 1
     // is pulled towards object 2.
     // Example: In sun-earth problem for the Earth orbit, the Earth is object 1 and

@@ -8,16 +8,16 @@
 class Solver{
 private:
     // Allow Solver access to member function of planet.
-    friend class planet;
+    friend class Planet;
 
     // Parameters
-    std::vector<planet> all_planets;
+    std::vector<Planet> all_planets;
     int total_planets;
 
 public:
     // Functions
     void Solver::init();
-    void Solver::add(planet &newPlanet);
+    void Solver::add(Planet &newPlanet);
     void Solver::run_velocityVerlet(double tFinal, double dt, double G);
 
 };
