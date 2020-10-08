@@ -4,13 +4,16 @@
 #include <cmath>
 #include "time.h"
 
+using namespace std;
+using namespace arma;
+
 void Solver::init(){
     vector<planet> all_planets;
     int total_planets = 0;
 }
 
-void Solver::add(planet &otherPlanet){
-    all_planets.pushback(otherPlanet)
+void Solver::add(planet &newPlanet){
+    all_planets.pushback(newPlanet)
     total_planets += 1;
 }
 
