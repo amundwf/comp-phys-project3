@@ -211,12 +211,20 @@ void task_3b_velocityVerlet(double G){
     double tFinal = 10;
     double dt = 1e-4;
 
+    vec omegaDirection = vec("0 0 1");
+    vec initialPosition = vec("1 0 0");
+    vec v_E_dir = cross(omegaDirection, initialPosition) / norm(cross(omegaDirection, initialPosition)); // The direction of the orbital velocity
+    // is perpendicular to both the angular momentum and the position in the orbit.
+    vec initialVelocity = v_E * v_E_dir;
+
+    planet planet1(0.000003,1.,0.0,0.0,0.0,6.3,0.0); // Earth: (mass,x,y,z,vx,vy,vz)
+    planet planet2(1.,0.,0.,0.,0.,0.,0.);          // Sun: (mass,x,y,z,vx,vy,vz)
+
     Solver my_solver;
     my_solver.init();
     my_solver.add(planet1);
     my_solver.add(planet2);
     my_solver.run_velocityVerlet(tFinal, dt, G);
-
 
 }
 */
