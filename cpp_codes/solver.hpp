@@ -17,7 +17,7 @@ private:
 public:
     // Functions
     void Solver::init();
-    void Solver::add(Planet &newPlanet);
+    void Solver::add(Planet newPlanet);
     void Solver::run_velocityVerlet(double tFinal, double dt, double G);
 
 };

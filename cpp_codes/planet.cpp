@@ -4,7 +4,7 @@
 using namespace arma;
 using namespace std;
 
-Planet::planet(double M, vec initialPosition, vec initialVelocity){
+Planet::init(double M, vec initialPosition, vec initialVelocity){
     mass = M;
     potential = 0.;
     kinetic = 0.;

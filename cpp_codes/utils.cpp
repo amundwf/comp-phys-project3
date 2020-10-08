@@ -239,8 +239,11 @@ void task_3b_velocityVerlet(double G){
     // is perpendicular to both the angular momentum and the position in the orbit.
     vec initialVelocity = v_E * v_E_dir;
     
-    Planet planet1(m_S, sunPosition, sunVelocity);     
-    Planet planet2(m_E, initialPosition, initialVelocity); 
+    Planet planet1;
+    planet1.init(m_S, sunPosition, sunVelocity);    
+
+    Planet planet2;
+    planet2.init(m_E, initialPosition, initialVelocity); 
        
     Solver my_solver;
     my_solver.init();
