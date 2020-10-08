@@ -9,7 +9,7 @@ void Solver::init(){
     int total_planets = 0;
 }
 
-void Solver::add(planet otherPlanet){
+void Solver::add(planet &otherPlanet){
     all_planets.pushback(otherPlanet)
     total_planets += 1;
 }
@@ -31,8 +31,8 @@ void Solver::run_velocityVerlet(double tFinal, double dt, double G){
             }
 
             // This is the other planet we are comparing current to.
-            planet &other = all_planets[k];
-            planet::gForceVector(other);
+            planet other = all_planets[k];
+            current.gForceVector(other);
             current.acceleration = current.forceVector / current.mass;
         }
     }
@@ -57,8 +57,8 @@ void Solver::run_velocityVerlet(double tFinal, double dt, double G){
                     continue;
                 }
                 // This is the other planet we are comparing current to.
-                planet &other = all_planets[k];
-                planet::gForceVector(other);
+                planet other = all_planets[k];
+                current.gForceVector(other);
                 current.acceleration = current.forceVector / current.mass;
             }
         }
