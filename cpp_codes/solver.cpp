@@ -71,5 +71,9 @@ void Solver::run_velocityVerlet(double tFinal, double dt, double G){
             planet &current = all_planets[j];
             current.velocity += 0.5*dt*(current.acceleration + current.previous_acceleration);
         }
+        
+        cout << all_planets(0).position << all_planets(0).velocity << endl;
+        cout << all_planets(1).position << all_planets(1).velocity << endl;
+        
     }
 }

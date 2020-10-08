@@ -17,7 +17,7 @@ public:
     double kinetic;
 
     // Functions
-    planet(double M, double x, double y, double z, double vx, double vy, double vz);
+    planet(double M, arma::vec initialPosition, arma::vec initialVelocity);
     gForceVec(planet otherPlanet);
 };
 #endif

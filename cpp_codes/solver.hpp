@@ -18,7 +18,7 @@ public:
     // Functions
     void Solver::init();
     void Solver::add(planet &newPlanet);
-    void Solver::run_veloctityVerlet(double tFinal, double dt, double G)
+    void Solver::run_veloctityVerlet(double tFinal, double dt, double G);
 
 };
 #endif

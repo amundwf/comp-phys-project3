@@ -1,5 +1,5 @@
 #include "utils.hpp"
-//#include "solver.hpp" 
+#include "solver.hpp" 
 #include <iostream>
 #include <cmath>
 #include <armadillo>
@@ -105,7 +105,7 @@ mat run_forwardEuler(double tFinal, double dt, double G){
 
     return results;
 }
-
+/*
 void writeMatrixToFile(mat results, string filename, string directory){
     // Write the results (an Nx7 matrix) from an ODE solver to
     // a text file with 7 columns.
@@ -123,7 +123,7 @@ void writeMatrixToFile(mat results, string filename, string directory){
     //results.save(csv_name("results.csv", header));
     results.save(csv_name(filePath, header));
 }
-
+*/
 
 mat run_velocityVerlet(double tFinal, double dt, double G){
     vec omegaDirection = vec("0 0 1");
@@ -206,20 +206,42 @@ void task_3a_velocityVerlet(double G){
     string directory = "../results/3a_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
 }
-/*
+
 void task_3b_velocityVerlet(double G){
     double tFinal = 10;
     double dt = 1e-4;
-
+    
     vec omegaDirection = vec("0 0 1");
+
+    // Initial position of Earth:
     vec initialPosition = vec("1 0 0");
+
+    vec sunPosition = vec("0 0 0"); 
+    vec sunVelocity = vec("0 0 0");
+    // The sun is at the center and approximately
+    // doesn't move because of its relatively large mass.
+
+    // Masses of Sun and Earth in SI units (kg):
+    double m_S_SI = 1.989e30;
+    double m_E_SI = 5.972e24;
+    double R_E = 1.;    // Earth orbit radius (1 AU).
+    
+    double m_S = 1.; // Solar mass in units of solar masses.
+    //double m_S = m_S_SI;
+    double m_E = m_E_SI/m_S_SI;     // Earth mass in units of solar masses.
+    //double m_E = m_E_SI;
+
+    double T_E = 1.; // Orbit period of Earth: 1 year.
+    double omega_E = (2*M_PI)/T_E; // Angular frequency of Earth's orbit (radians).
+    double v_E = (2*M_PI*R_E)/T_E;  // Orbital speed of Earth (approximately constant along the
+    // entire orbit since the orbit is approximately circular).
     vec v_E_dir = cross(omegaDirection, initialPosition) / norm(cross(omegaDirection, initialPosition)); // The direction of the orbital velocity
     // is perpendicular to both the angular momentum and the position in the orbit.
     vec initialVelocity = v_E * v_E_dir;
-
-    planet planet1(0.000003,1.,0.0,0.0,0.0,6.3,0.0); // Earth: (mass,x,y,z,vx,vy,vz)
-    planet planet2(1.,0.,0.,0.,0.,0.,0.);          // Sun: (mass,x,y,z,vx,vy,vz)
-
+    
+    planet planet1(m_S, sunPosition, sunVelocity);     
+    planet planet2(m_E, initialPosition, initialVelocity); 
+       
     Solver my_solver;
     my_solver.init();
     my_solver.add(planet1);
@@ -227,4 +249,3 @@ void task_3b_velocityVerlet(double G){
     my_solver.run_velocityVerlet(tFinal, dt, G);
 
 }
-*/
