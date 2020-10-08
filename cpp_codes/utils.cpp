@@ -1,5 +1,6 @@
 #include "utils.hpp"
 #include "solver.hpp" 
+#include "planet.hpp"
 #include <iostream>
 #include <cmath>
 #include <armadillo>
