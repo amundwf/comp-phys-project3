@@ -9,7 +9,7 @@ void Solver::init(){
     int total_planets = 0;
 }
 
-void Solver::add(planet &otherPlanet){
+void Solver::add(planet otherPlanet){
     all_planets.pushback(otherPlanet)
     total_planets += 1;
 }
