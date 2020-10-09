@@ -9,16 +9,16 @@
 // This file contains various functions, for running different parts of the project.
 arma::vec gForceVector(double G, double mass1, double mass2, arma::vec pos1, arma::vec pos2);
 
-//void writeMatrixToFile(arma::mat results, std::string filename, std::string directory);
+void writeMatrixToFile(arma::mat results, std::string filename, std::string directory);
 
-//arma::mat run_forwardEuler(double tFinal, double dt, double G);
+arma::mat run_forwardEuler(double tFinal, double dt, double G);
 
-//arma::mat run_velocityVerlet(double tFinal, double dt, double G);
+arma::mat run_velocityVerlet(double tFinal, double dt, double G);
 
-//void task_3a_forwardEuler(double G);
+void task_3a_forwardEuler(double G);
 
-//void task_3a_velocityVerlet(double G);
+void task_3a_velocityVerlet(double G);
 
-void task_3b_velocityVerlet(double G);
+//void task_3b_velocityVerlet(double G);
 
 #endif 

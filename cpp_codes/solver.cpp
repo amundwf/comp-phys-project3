@@ -1,5 +1,5 @@
 #include "solver.hpp"
-#include "planet.hpp"
+
 #include <iostream>
 #include <cmath>
 #include "time.h"

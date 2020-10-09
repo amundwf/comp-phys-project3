@@ -12,6 +12,7 @@ private:
     int total_planets;
 
 public:
+    //friend class Planet;
     // Functions
     void init();
     void add(Planet newPlanet);

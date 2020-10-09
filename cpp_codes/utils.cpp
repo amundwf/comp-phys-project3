@@ -1,6 +1,6 @@
 #include "utils.hpp"
-#include "solver.hpp" 
-#include "planet.hpp"
+//#include "solver.hpp" 
+//#include "planet.hpp"
 #include <iostream>
 #include <cmath>
 #include <armadillo>
@@ -26,7 +26,7 @@ vec gForceVector(double G, double mass1, double mass2, vec pos1, vec pos2){
     return forceVector;
 }
 
-/*
+
 mat run_forwardEuler(double tFinal, double dt, double G){
     // This function returns an Nx7 matrix where the columns contain the solution
     // data points (t, x, y, z, vx, vy, vz) (positions and velocities and their corresponding
@@ -207,7 +207,7 @@ void task_3a_velocityVerlet(double G){
     string directory = "../results/3a_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
 }
-*/
+/*
 void task_3b_velocityVerlet(double G){
     double tFinal = 10;
     double dt = 1e-4;
@@ -253,3 +253,4 @@ void task_3b_velocityVerlet(double G){
     my_solver.run_velocityVerlet(tFinal, dt, G);
 
 }
+*/
