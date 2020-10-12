@@ -58,9 +58,14 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
     //cout << "Number of planets = " << total_planets << endl;
     cout << "Number of planets = " << this->total_planets << endl;
 
+
+// THE BUGS ARE SOMEWHERE WITHIN THIS COMMENT BOX
+
     // Set up matrix to contain all planet info.
     mat results = mat(N*(total_planets-1), 7); // Columns: t, x, y, z, vx, vy, vz
-    
+    //mat results = mat(N*total_planets, 7);
+    //cout << 
+
     // Fill with times for all planets.
     vec tList = vec(N);
     for(int i=0; i<=N-1; i++){tList(i) = i*dt;}
@@ -70,7 +75,7 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
     }
     results.col(0) = t_all;
 
-    cout << "results 1\n" << results << endl;
+    results.print("results 1:");
 
     // Save initial veloctiy and position to matrix.
     // Start at 1, skip the sun.
@@ -80,22 +85,19 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
     for (int i=0; i<=total_planets-1; i++){
         //Planet &current = all_planets[i];
         Planet current = all_planets[i];
-        //cout << "current.mass: " << current.mass << endl;
 
         //Planet current = all_planets(i);
         int x = N*(i-1);
         vec currentPosition = current.getPosition();
         vec currentVelocity = current.getVelocity();
 
-        /*
         cout << "current positon size = " << current.position.size() << endl;
         results(x, span(1,3)) = current.position.t();
         results(x, span(4,6)) = current.velocity.t();
-        */
-        cout << "current positon size = " << currentPosition.size() << endl;
-        results(x, span(1,3)) = currentPosition.t();
-        results(x, span(4,6)) = currentVelocity.t();
+        
     }
+// END OF COMMENT BOX
+
 
     cout << "results 2\n" <<results << endl;
 

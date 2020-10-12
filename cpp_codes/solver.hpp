@@ -11,6 +11,7 @@
 
 
 class Solver{
+friend class Planet;
 private:
     int total_planets;
     std::vector<Planet> all_planets;

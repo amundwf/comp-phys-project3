@@ -5,6 +5,7 @@
 #include <armadillo>
 
 class Planet{
+friend class Solver;
 public:
     // Parameters
     arma::vec position;

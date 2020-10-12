@@ -373,19 +373,15 @@ void task_3b_velocityVerlet(double G){
     cout << "sun.mass: " << sun.mass << endl; // Debugging
     //vector<Planet> myPlanets = vector<Planet>(sun, earth);
 
-
     Solver my_solver;
     my_solver.init();
     cout << "my_solver.get_total_planets() 1: " << my_solver.get_total_planets() << endl;
     my_solver.add(sun);
     my_solver.add(earth);
 
-    // DEBUGGING
-    cout << "((my_solver.get_all_planets())[0]).mass: " << ((my_solver.get_all_planets())[0]).mass << endl;  
-    cout << "my_solver.get_total_planets() 2: " << my_solver.get_total_planets() << endl;
-
-
+    // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
     mat resultsVerlet = my_solver.run_velocityVerlet(tFinal, dt, G);
+    // my_solver.run_velocityVerlet(tFinal, dt, G); ? 
 
     string filename = "earth_sun_verlet_oo.csv";
     string directory = "../results/3b_earth_sun_system/";
