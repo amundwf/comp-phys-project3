@@ -332,6 +332,7 @@ void task_3a_velocityVerlet(double G){
 }
 
 void task_3b_velocityVerlet(double G){
+    // Runs object oriented velocity Verlet. 
     double tFinal = 10;
     double dt = 1;
     
@@ -373,7 +374,9 @@ void task_3b_velocityVerlet(double G){
     my_solver.init();
     my_solver.add(sun);
     my_solver.add(earth);
+
     mat resultsVerlet = my_solver.run_velocityVerlet(tFinal, dt, G);
+
     string filename = "earth_sun_verlet_oo.csv";
     string directory = "../results/3b_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
