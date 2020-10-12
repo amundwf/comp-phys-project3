@@ -1,10 +1,9 @@
-#include "utils.hpp"
-#include "solver.hpp" 
-
-
 #include <iostream>
 #include <cmath>
 #include <armadillo>
+#include "utils.hpp"
+#include "solver.hpp" 
+#include "planet.hpp"
 
 using namespace std;
 using namespace arma;
@@ -369,11 +368,22 @@ void task_3b_velocityVerlet(double G){
 
     Planet earth;
     earth.init(m_E, initialPosition, initialVelocity); 
-       
+
+
+    cout << "sun.mass: " << sun.mass << endl; // Debugging
+    //vector<Planet> myPlanets = vector<Planet>(sun, earth);
+
+
     Solver my_solver;
     my_solver.init();
+    cout << "my_solver.get_total_planets() 1: " << my_solver.get_total_planets() << endl;
     my_solver.add(sun);
     my_solver.add(earth);
+
+    // DEBUGGING
+    cout << "((my_solver.get_all_planets())[0]).mass: " << ((my_solver.get_all_planets())[0]).mass << endl;  
+    cout << "my_solver.get_total_planets() 2: " << my_solver.get_total_planets() << endl;
+
 
     mat resultsVerlet = my_solver.run_velocityVerlet(tFinal, dt, G);
 

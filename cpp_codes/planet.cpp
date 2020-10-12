@@ -16,3 +16,10 @@ void Planet::init(double M, vec initialPosition, vec initialVelocity){
     vec acceleration = zeros<vec>(3);
 }
 
+vec Planet::getPosition(){
+    return position;
+}
+
+vec Planet::getVelocity(){
+    return velocity;
+}
