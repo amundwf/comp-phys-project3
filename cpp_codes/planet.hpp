@@ -18,6 +18,6 @@ public:
 
     // Functions
     void init(double M, arma::vec initialPosition, arma::vec initialVelocity);
-    void gForceVec(Planet otherPlanet);
+    
 };
 #endif

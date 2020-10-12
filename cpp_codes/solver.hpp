@@ -1,22 +1,23 @@
 #ifndef SOLVER_HPP
 #define SOLVER_HPP
 
-#include "planet.hpp"
 #include <fstream>
 #include <armadillo>
+#include "planet.hpp"
 
 class Solver{
 private:
 
-    // Parameters
+    int total_planets = 0;
     std::vector<Planet> all_planets;
-    int total_planets;
+    
 public:
 
     // Functions
     void init();
     void add(Planet newPlanet);
-    void run_velocityVerlet(double tFinal, double dt, double G);
+    void gForceVector(Planet current, Planet other, double G);
+    arma::mat run_velocityVerlet(double tFinal, double dt, double G);
 
 };
 #endif

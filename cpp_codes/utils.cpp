@@ -1,6 +1,7 @@
 #include "utils.hpp"
-//#include "solver.hpp" 
-//#include "planet.hpp"
+#include "solver.hpp" 
+
+
 #include <iostream>
 #include <cmath>
 #include <armadillo>
@@ -207,10 +208,10 @@ void task_3a_velocityVerlet(double G){
     string directory = "../results/3a_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
 }
-/*
+
 void task_3b_velocityVerlet(double G){
     double tFinal = 10;
-    double dt = 1e-4;
+    double dt = 1;
     
     vec omegaDirection = vec("0 0 1");
 
@@ -240,17 +241,19 @@ void task_3b_velocityVerlet(double G){
     // is perpendicular to both the angular momentum and the position in the orbit.
     vec initialVelocity = v_E * v_E_dir;
     
-    Planet planet1;
-    planet1.init(m_S, sunPosition, sunVelocity);    
+    Planet sun;
+    sun.init(m_S, sunPosition, sunVelocity);    
 
-    Planet planet2;
-    planet2.init(m_E, initialPosition, initialVelocity); 
+    Planet earth;
+    earth.init(m_E, initialPosition, initialVelocity); 
        
     Solver my_solver;
     my_solver.init();
-    my_solver.add(planet1);
-    my_solver.add(planet2);
-    my_solver.run_velocityVerlet(tFinal, dt, G);
+    my_solver.add(sun);
+    my_solver.add(earth);
+    mat resultsVerlet = my_solver.run_velocityVerlet(tFinal, dt, G);
+    string filename = "earth_sun_verlet_oo.csv";
+    string directory = "../results/3b_earth_sun_system/";
+    writeMatrixToFile(resultsVerlet, filename, directory); 
 
 }
-*/
