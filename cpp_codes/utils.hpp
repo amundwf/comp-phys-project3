@@ -25,6 +25,8 @@ void task_3a_forwardEuler(double G);
 
 void task_3a_velocityVerlet(double G);
 
+void task_3b_velocityVerlet(double G);
+
 void task_3f_escape_velocity(double initialSpeed_kmPerSec, double G);
 
 //void run_solarSystem();

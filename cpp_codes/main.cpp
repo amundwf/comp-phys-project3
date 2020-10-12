@@ -1,7 +1,5 @@
 #include <iostream>
 #include <cmath>
-//#include "planet.hpp"
-//#include "solver.hpp"
 #include "utils.hpp"
 
 using namespace std;
@@ -15,6 +13,8 @@ int main(){
 
     //task_3a_velocityVerlet(G);
 
+    task_3b_velocityVerlet(G);
+    
     double initialSpeed_kmPerSec = 40;
     task_3f_escape_velocity(initialSpeed_kmPerSec, G);
 
