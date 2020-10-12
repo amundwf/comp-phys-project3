@@ -5,14 +5,14 @@
 #include <fstream>
 #include <armadillo>
 
-class Solver :: public Planet{
+class Solver{
 private:
+
     // Parameters
     std::vector<Planet> all_planets;
     int total_planets;
-
 public:
-    //friend class Planet;
+
     // Functions
     void init();
     void add(Planet newPlanet);
