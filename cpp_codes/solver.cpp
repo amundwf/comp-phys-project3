@@ -37,7 +37,7 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
     cout << "Number of timesteps: N = " << N << endl;
     cout << "Number of planets = " << total_planets << endl;
 
-    // Set up matrix.
+    // Set up matrix to contain all planet info.
     mat results = mat(N*(total_planets-1), 7); // Columns: t, x, y, z, vx, vy, vz
     
     // Fill with times for all planets.
@@ -49,7 +49,7 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
     }
     results.col(0) = t_all;
 
-    cout << "r1\n" << results << endl;
+    cout << "results 1\n" << results << endl;
 
     // Save initial veloctiy and position to matrix.
     // Start at 1, skip the sun.
@@ -61,7 +61,7 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
         results(x, span(4,6)) = current.velocity.t();
     }
 
-    cout << "r2\n" <<results << endl;
+    cout << "results 2\n" <<results << endl;
 
     // Calculate the initial acceleration of all planets.
     // start at j=1 since we don't want to update the Sun.
