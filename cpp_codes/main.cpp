@@ -14,6 +14,9 @@ int main(){
     //task_3a_velocityVerlet(G);
 
     task_3b_velocityVerlet(G);
+    
+    double initialSpeed_kmPerSec = 40;
+    task_3f_escape_velocity(initialSpeed_kmPerSec, G);
 
     return 0;
 }

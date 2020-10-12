@@ -1,0 +1,16 @@
+initial_speed_km/s  escape_yes/no?
+10     no
+20    no
+30     no (almost perfect circle with radius just over 1)
+40     no (elliptical orbit)
+42     no
+42.1   no 
+42.125     yes (barely)
+42.15  yes 
+42.2   yes
+42.3   yes 
+42.5   yes 
+43     yes 
+45     yes 
+50     yes 
+100    yes 

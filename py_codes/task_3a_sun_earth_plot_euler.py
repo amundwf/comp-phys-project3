@@ -35,9 +35,9 @@ vzList = data["vz"]
 plot1, = plt.plot(xList, yList, label='forwardEuler')
 
 plt.grid()
-#plt.xlabel(r'$x$')
-#plt.ylabel(r'$y$')
+plt.xlabel(r'$x$')
+plt.ylabel(r'$y$')
 plt.xlim(-1.5, 1.5)
 plt.ylim(-1.5, 1.5)
 plt.suptitle('Earth-Sun system, forward Euler')
-plt.show() 
+plt.show()
