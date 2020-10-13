@@ -36,7 +36,7 @@ std::vector<Planet> Solver::get_all_planets(){
     return all_planets;
 }
 
-void Solver::gForceVector(Planet current, Planet other, double G){
+void Solver::gForceVector(Planet &current, Planet &other, double G){
     // This returns the gravitational force *on* object 1 *from* object 2. Object 1
     // is pulled towards object 2.
     // Example: In sun-earth problem for the Earth orbit, the Earth is object 1 and
@@ -49,24 +49,19 @@ void Solver::gForceVector(Planet current, Planet other, double G){
     vec forceDirection = (other.position-current.position)/norm(other.position-current.position);   // This vector points *from*
     // object 1 and *towards* object 2, meaning that object 1 is influenced by object 2.
     current.forceVector += forceStrength * forceDirection;
+    //cout << "forceVector in gForceVector" << current.forceVector.t() << endl;
 }
 
 mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
 
     int N = round(tFinal/dt);   // Number of timesteps.
     cout << "Number of timesteps: N = " << N << endl;
-    //cout << "Number of planets = " << total_planets << endl;
     cout << "Number of planets = " << this->total_planets << endl;
 
-
-// THE BUGS ARE SOMEWHERE WITHIN THIS COMMENT BOX
-
     // Set up matrix to contain all planet info.
-    mat results = mat(N*(total_planets-1), 7); // Columns: t, x, y, z, vx, vy, vz
-    //mat results = mat(N*total_planets, 7);
-    //cout << 
+    mat results = mat(N*(total_planets-1), 7);
 
-    // Fill with times for all planets.
+    // Fill matrix with times for all planets.
     vec tList = vec(N);
     for(int i=0; i<=N-1; i++){tList(i) = i*dt;}
     vec t_all = tList;
@@ -75,14 +70,9 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
     }
     results.col(0) = t_all;
 
-    results.print("results 1:");
-
-    // Save initial veloctiy and position to matrix.
+    // Save initial velocity and position to matrix.
     // Start at 1, skip the sun.
-
-    cout << "all_planets.size(): " << all_planets.size() << endl;
-    
-    for (int i=0; i<=total_planets-1; i++){
+    for (int i=1; i<total_planets; i++){
         //Planet &current = all_planets[i];
         Planet current = all_planets[i];
 
@@ -91,15 +81,10 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
         vec currentPosition = current.getPosition();
         vec currentVelocity = current.getVelocity();
 
-        cout << "current positon size = " << current.position.size() << endl;
         results(x, span(1,3)) = current.position.t();
         results(x, span(4,6)) = current.velocity.t();
         
     }
-// END OF COMMENT BOX
-
-
-    cout << "results 2\n" <<results << endl;
 
     // Calculate the initial acceleration of all planets.
     // start at j=1 since we don't want to update the Sun.
@@ -116,8 +101,13 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
             // This is the other planet we are comparing current to.
             Planet &other = all_planets[k];
             Solver::gForceVector(current, other, G);
-            current.acceleration = current.forceVector / current.mass;
         }
+        current.acceleration = current.forceVector / current.mass;
+
+        // Print some info.
+        cout <<"intial acceleration" << current.acceleration.t() << endl;
+        cout <<"intial forceVector" << current.forceVector.t() << endl;
+        cout <<"mass" << current.mass << endl;
     }
 
     // Loop for each time step.
@@ -144,21 +134,21 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
                 // This is the other planet we are comparing current to.
                 Planet &other = all_planets[k];
                 Solver::gForceVector(current, other, G);
-                current.acceleration = current.forceVector / current.mass;
             }
+            current.acceleration = current.forceVector / current.mass;
         }
 
         // Evaluate the new velocity for all planets.
-        for (int j=0; j<total_planets; j++){
+        for (int j=1; j<total_planets; j++){
             Planet &current = all_planets[j];
             current.velocity += 0.5*dt*(current.acceleration + current.previous_acceleration);
         }
         
         // Save the new position and velocity to matrix.
         for (int j=1; j<total_planets; j++){
-        Planet &current = all_planets[j];
-        results(i + N*(j-1), span(1,3)) = current.position.t();
-        results(i + N*(j-1), span(4,6)) = current.velocity.t();
+            Planet &current = all_planets[j];
+            results(i + N*(j-1), span(1,3)) = current.position.t();
+            results(i + N*(j-1), span(4,6)) = current.velocity.t();
         }
     }
     return results;

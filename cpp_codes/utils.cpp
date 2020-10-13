@@ -23,6 +23,7 @@ vec gForceVector(double G, double mass1, double mass2, vec pos1, vec pos2){
     vec forceDirection = (pos2-pos1)/norm(pos2-pos1);   // This vector points *from*
     // object 1 and *towards* object 2, meaning that object 1 is influenced by object 2.
     vec forceVector = forceStrength * forceDirection;
+    //cout << forceVector.t() << endl;
     return forceVector;
 }
 
@@ -333,7 +334,7 @@ void task_3a_velocityVerlet(double G){
 void task_3b_velocityVerlet(double G){
     // Runs object oriented velocity Verlet. 
     double tFinal = 10;
-    double dt = 1;
+    double dt = 1e-4;
     
     vec omegaDirection = vec("0 0 1");
 

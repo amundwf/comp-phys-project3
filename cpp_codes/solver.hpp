@@ -22,7 +22,7 @@ public:
     // Functions
     void init();
     void add(Planet newPlanet);
-    void gForceVector(Planet current, Planet other, double G);
+    void gForceVector(Planet &current, Planet &other, double G);
     arma::mat run_velocityVerlet(double tFinal, double dt, double G);
     int get_total_planets();
     std::vector<Planet> get_all_planets();
