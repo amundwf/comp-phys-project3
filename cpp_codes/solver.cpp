@@ -5,6 +5,7 @@
 #include "time.h"
 #include "solver.hpp"
 #include "planet.hpp"
+#include "utils.hpp"
 
 using namespace std;
 using namespace arma;
@@ -27,7 +28,7 @@ int Solver::get_total_planets(){
 std::vector<Planet> Solver::get_all_planets(){
     return all_planets;
 }
-
+/*
 void Solver::gForceVector(Planet &current, Planet &other, double G){
     // This returns the gravitational force *on* object 1 *from* object 2. Object 1
     // is pulled towards object 2.
@@ -42,11 +43,11 @@ void Solver::gForceVector(Planet &current, Planet &other, double G){
     // object 1 and *towards* object 2, meaning that object 1 is influenced by object 2.
     current.forceVector += forceStrength*forceDirection;
 
-    cout << "forceVector in gForceVector" << current.forceVector.t() << endl;
+    //cout << "forceVector in gForceVector" << current.forceVector.t() << endl;
 }
+*/
 
 mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
-
     int N = round(tFinal/dt);   // Number of timesteps.
     cout << "Number of timesteps: N = " << N << endl;
     cout << "Number of planets = " << this->total_planets << endl;
@@ -76,16 +77,19 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
 
         results(x, span(1,3)) = current.position.t();
         results(x, span(4,6)) = current.velocity.t();
-        
     }
 
     // Calculate the initial acceleration of all planets.
     // start at j=1 since we don't want to update the Sun.
-    for (int j=1; j<total_planets; j++){
+    for (int j=1; j <= total_planets-1; j++){
         Planet &current = all_planets[j];
 
         // Calculate force between current and all other planets.
-        for (int k=0; k<total_planets; k++){
+        vec totalForce = vec("0 0 0");  // Instantiate it as zero force to start
+        // with and then add the forces from the sun and all planets.
+        vec force;
+
+        for (int k=0; k <= total_planets-1; k++){
             // Skip if j == k.
             if (j==k){
                 continue;
@@ -93,12 +97,16 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
 
             // This is the other planet we are comparing current to.
             Planet &other = all_planets[k];
-            Solver::gForceVector(current, other, G);
+            // Get the force from the other planet on the current planet:
+            force = gForceVectorPlanet(current, other, G);
+            totalForce += force;
         }
+        current.forceVector = totalForce;
+        // Get the acceleration:
         current.acceleration = current.forceVector / current.mass;
 
-        // Print some info.
-        cout << "Planet number: " << j << endl;
+        // Print some planet info.
+        cout << "\nPlanet number: " << j << endl;
         cout <<"Intial acceleration: " << current.acceleration.t() << endl;
         cout <<"Intial forceVector: " << current.forceVector.t() << endl;
         cout <<"current.mass: " << current.mass << endl;
@@ -116,6 +124,8 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
         }
 
         // Evaluate the new acceleration for all planets.
+        vec totalForce = vec("0 0 0"); // Initialize sum of forces as zero.
+        vec force;
         for (int j=1; j<total_planets; j++){
             Planet &current = all_planets[j];
 
@@ -127,8 +137,10 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
                 }
                 // This is the other planet we are comparing current to.
                 Planet &other = all_planets[k];
-                Solver::gForceVector(current, other, G);
+                force = gForceVectorPlanet(current, other, G);
+                totalForce += force;
             }
+            current.forceVector = totalForce;
             current.acceleration = current.forceVector / current.mass;
         }
 

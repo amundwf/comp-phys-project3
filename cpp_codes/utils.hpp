@@ -10,6 +10,8 @@
 // This file contains various functions, for running different parts of the project.
 arma::vec gForceVector(double G, double mass1, double mass2, arma::vec pos1, arma::vec pos2);
 
+arma::vec gForceVectorPlanet(Planet planet1, Planet planet2, double G);
+
 void writeMatrixToFile(arma::mat results, std::string filename, std::string directory);
 
 // Convertors between velocity units:
@@ -29,6 +31,8 @@ void task_3a_velocityVerlet(double G);
 void task_3b_velocityVerlet(double G);
 
 void task_3f_escape_velocity(double initialSpeed_kmPerSec, double G);
+
+void task_3g_three_body(double G);
 
 //void run_solarSystem();
 
