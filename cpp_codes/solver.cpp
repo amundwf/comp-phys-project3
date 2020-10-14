@@ -13,20 +13,12 @@ void Solver::init(){
     total_planets = 0;
 }
 
-
 void Solver::add(Planet newPlanet){
     // cout << this->total_planets << endl;
     //this->total_planets += 1;
     total_planets += 1;
     all_planets.push_back(newPlanet);
 }
-/*
-void Solver::add(Planet newPlanet){
-    total_planets += 1;
-    all_planets.resize(total_planets);
-    all_planets(total_planets-1) = newPlanet;
-}
-*/
 
 int Solver::get_total_planets(){
     return total_planets;
@@ -48,8 +40,9 @@ void Solver::gForceVector(Planet &current, Planet &other, double G){
 
     vec forceDirection = (other.position-current.position)/norm(other.position-current.position);   // This vector points *from*
     // object 1 and *towards* object 2, meaning that object 1 is influenced by object 2.
-    current.forceVector += forceStrength * forceDirection;
-    //cout << "forceVector in gForceVector" << current.forceVector.t() << endl;
+    current.forceVector += forceStrength*forceDirection;
+
+    cout << "forceVector in gForceVector" << current.forceVector.t() << endl;
 }
 
 mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
@@ -105,9 +98,10 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
         current.acceleration = current.forceVector / current.mass;
 
         // Print some info.
-        cout <<"intial acceleration" << current.acceleration.t() << endl;
-        cout <<"intial forceVector" << current.forceVector.t() << endl;
-        cout <<"mass" << current.mass << endl;
+        cout << "Planet number: " << j << endl;
+        cout <<"Intial acceleration: " << current.acceleration.t() << endl;
+        cout <<"Intial forceVector: " << current.forceVector.t() << endl;
+        cout <<"current.mass: " << current.mass << endl;
     }
 
     // Loop for each time step.

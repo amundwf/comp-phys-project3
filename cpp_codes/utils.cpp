@@ -333,8 +333,10 @@ void task_3a_velocityVerlet(double G){
 
 void task_3b_velocityVerlet(double G){
     // Runs object oriented velocity Verlet. 
-    double tFinal = 10;
     double dt = 1e-4;
+    //double tFinal = 10;
+    int N = 20;
+    double tFinal = dt*N;
     
     vec omegaDirection = vec("0 0 1");
 
@@ -370,25 +372,22 @@ void task_3b_velocityVerlet(double G){
     Planet earth;
     earth.init(m_E, initialPosition, initialVelocity); 
 
-
-    cout << "sun.mass: " << sun.mass << endl; // Debugging
-    //vector<Planet> myPlanets = vector<Planet>(sun, earth);
-
     Solver my_solver;
     my_solver.init();
-    cout << "my_solver.get_total_planets() 1: " << my_solver.get_total_planets() << endl;
     my_solver.add(sun);
     my_solver.add(earth);
 
     // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
     mat resultsVerlet = my_solver.run_velocityVerlet(tFinal, dt, G);
     // my_solver.run_velocityVerlet(tFinal, dt, G); ? 
+    resultsVerlet.print("resultsVerlet");
 
     string filename = "earth_sun_verlet_oo.csv";
     string directory = "../results/3b_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
 
 }
+
 void task_3f_escape_velocity(double initialSpeed_kmPerSec, double G){
     // This does essentially the same as task_3a_velocityVerlet(), but
     // customized for task 3f.
