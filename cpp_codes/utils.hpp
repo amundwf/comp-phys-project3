@@ -16,6 +16,10 @@ double potentialEnergy(Planet current, Planet other, double G);
 
 void writeMatrixToFile(arma::mat results, std::string filename, std::string directory);
 
+arma::vec initial_earth_velocity(arma::vec initialPosition);
+
+double get_earth_mass();
+
 // Convertors between velocity units:
 double kmPerSec_to_auPerYear(double speed_kmPerSec);
 double auPerYear_to_kmPerSec(double speed_auPerYear);

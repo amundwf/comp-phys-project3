@@ -82,6 +82,30 @@ double auPerYear_to_kmPerSec(double speed_auPerYear){
     return speed_auPerYear * oneAuPerYear_in_kmPerSec;
 }
 
+double get_earth_mass(){
+    // Masses of Sun and Earth in SI units (kg):
+    double m_S_SI = 1.989e30;
+    double m_E_SI = 5.972e24;
+    double m_E = m_E_SI/m_S_SI;
+    return m_E;
+}
+
+vec initial_earth_velocity(vec initialPosition){
+    // Return the earth initial velocity from position. 
+    
+    vec omegaDirection = vec("0 0 1");
+    double R_E = 1.;    // Earth orbit radius (1 AU).
+    double m_S = 1.; // Solar mass in units of solar masses.
+    double T_E = 1.; // Orbit period of Earth: 1 year.
+    double omega_E = (2*M_PI)/T_E; // Angular frequency of Earth's orbit (radians).
+    double v_E = (2*M_PI*R_E)/T_E;  // Orbital speed of Earth (approximately constant along the
+    // entire orbit since the orbit is approximately circular).
+
+    vec v_E_dir = cross(omegaDirection, initialPosition) / norm(cross(omegaDirection, initialPosition)); // The direction of the orbital velocity
+    // is perpendicular to both the angular momentum and the position in the orbit.
+    vec initialVelocity = v_E * v_E_dir;
+    return initialVelocity;
+}
 mat run_forwardEuler(double tFinal, double dt, double G){
     // This function returns an Nx7 matrix where the columns contain the solution
     // data points (t, x, y, z, vx, vy, vz) (positions and velocities and their corresponding
@@ -360,42 +384,25 @@ void task_3a_velocityVerlet(double G){
 
 void task_3b_velocityVerlet(double G){
     // Runs object oriented velocity Verlet. 
+
     double dt = 1e-2;
     //double tFinal = 10;
     int N = 1000;
     double tFinal = dt*N;
-    
-    vec omegaDirection = vec("0 0 1");
 
-    // Initial position of Earth:
+    // Initial position and velocity of Earth.
     vec initialPosition = vec("1 0 0");
+    vec initialVelocity = initial_earth_velocity(initialPosition);
 
+    // Initial pos and vel of Sun.
     vec sunPosition = vec("0 0 0"); 
     vec sunVelocity = vec("0 0 0");
-    // The sun is at the center and approximately
-    // doesn't move because of its relatively large mass.
-
-    // Masses of Sun and Earth in SI units (kg):
-    double m_S_SI = 1.989e30;
-    double m_E_SI = 5.972e24;
-    double R_E = 1.;    // Earth orbit radius (1 AU).
     
-    double m_S = 1.; // Solar mass in units of solar masses.
-    //double m_S = m_S_SI;
-    double m_E = m_E_SI/m_S_SI;     // Earth mass in units of solar masses.
-    //double m_E = m_E_SI;
-
-    double T_E = 1.; // Orbit period of Earth: 1 year.
-    double omega_E = (2*M_PI)/T_E; // Angular frequency of Earth's orbit (radians).
-    double v_E = (2*M_PI*R_E)/T_E;  // Orbital speed of Earth (approximately constant along the
-    // entire orbit since the orbit is approximately circular).
-    vec v_E_dir = cross(omegaDirection, initialPosition) / norm(cross(omegaDirection, initialPosition)); // The direction of the orbital velocity
-    // is perpendicular to both the angular momentum and the position in the orbit.
-    vec initialVelocity = v_E * v_E_dir;
-    
+    double m_S = 1.0;
     Planet sun;
     sun.init(m_S, sunPosition, sunVelocity);    
 
+    double m_E = get_earth_mass();
     Planet earth;
     earth.init(m_E, initialPosition, initialVelocity); 
 
@@ -452,38 +459,21 @@ void task_3g_three_body(double G){
     //int N = 5000; double tFinal = dt*N;
     int N = round(tFinal/dt);
     
-    vec omegaDirection = vec("0 0 1");
-
-    // Initial position of Earth:
+    // Initial position and velocity of Earth.
     vec initialPosition = vec("1 0 0");
+    vec initialVelocity = initial_earth_velocity(initialPosition);
 
+    // Initial pos and vel of Sun.
     vec sunPosition = vec("0 0 0"); 
     vec sunVelocity = vec("0 0 0");
-    // The sun is at the center and approximately
-    // doesn't move because of its relatively large mass.
-
-    // Masses of Sun and Earth in SI units (kg):
-    double m_S_SI = 1.989e30;
-    double m_E_SI = 5.972e24;
-    double R_E = 1.;    // Earth orbit radius (1 AU).
     
-    double m_S = 1.; // Solar mass in units of solar masses.
-    //double m_S = m_S_SI;
-    double m_E = m_E_SI/m_S_SI;     // Earth mass in units of solar masses.
-    //double m_E = m_E_SI;
-
-    double T_E = 1.; // Orbit period of Earth: 1 year.
-    double omega_E = (2*M_PI)/T_E; // Angular frequency of Earth's orbit (radians).
-    double v_E = (2*M_PI*R_E)/T_E;  // Orbital speed of Earth (approximately constant along the
-    // entire orbit since the orbit is approximately circular).
-    vec v_E_dir = cross(omegaDirection, initialPosition) / norm(cross(omegaDirection, initialPosition)); // The direction of the orbital velocity
-    // is perpendicular to both the angular momentum and the position in the orbit.
-    vec initialVelocity = v_E * v_E_dir;
     initialVelocity.t().print("initialVelocity: ");
     
+    double m_S = 1.0;
     Planet sun;
     sun.init(m_S, sunPosition, sunVelocity);    
 
+    double m_E = get_earth_mass();
     Planet earth;
     earth.init(m_E, initialPosition, initialVelocity); 
 
