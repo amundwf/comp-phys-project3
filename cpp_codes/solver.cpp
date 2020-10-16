@@ -10,8 +10,9 @@
 using namespace std;
 using namespace arma;
 
-void Solver::init(){
+void Solver::init(int N){
     total_planets = 0;
+    energyMatrix = mat(N,3);
 }
 
 void Solver::add(Planet newPlanet){
@@ -29,18 +30,17 @@ std::vector<Planet> Solver::get_all_planets(){
     return all_planets;
 }
 
-double Solver::totalEnergySystem(){
+void Solver::totalEnergySystem(int i, double G){
     // Calculate the total energy of the system.
 
     // Initialise totalK to 0.
     double totalKinetic = 0.0;
+    double totalPotential = 0.0;
     for (int j=1; j <= total_planets-1; j++){
         Planet current = all_planets[j];
 
         totalKinetic += current.kineticEnergy();
 
-        // Initialise totalP to 0.
-        double totalPotential = 0.0;
         for (int k=0; k <= total_planets-1; k++){
             // Skip if j == k.
             if (j==k){
@@ -51,7 +51,14 @@ double Solver::totalEnergySystem(){
             totalPotential += potentialEnergy(current, other, G);
         }
     }
-    return totalKinetic + totalPotential;
+    double totalEnergy = (totalKinetic + totalPotential);
+    energyMatrix(i, 0) = totalKinetic;
+    energyMatrix(i, 1) = totalPotential;
+    energyMatrix(i, 2) = totalEnergy;
+}
+
+mat Solver::get_energy_matrix(){
+    return energyMatrix;
 }
 
 mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
@@ -105,9 +112,8 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
         */
     }
 
-    // Print the initial total energy.
-    totalEnergy = totalEnergySystem();
-    cout << "Total Energy = " << totalEnergy << endl;
+    // Calculate initial total energy.
+    totalEnergySystem(0, G);
 
     // Save initial velocity and position and total energy to matrix.
     // Start at 1, skip the sun.
@@ -167,9 +173,8 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
             results(i + N*(j-1), span(4,6)) = current.velocity.t();
         }
 
-        // Print the total energy.
-        totalEnergy = totalEnergySystem();
-        cout << "Total Energy = " << totalEnergy << endl;
+        // Print the total energy to results.
+        totalEnergySystem(i, G);
     }
     return results;
 }
