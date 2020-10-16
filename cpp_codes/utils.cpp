@@ -50,6 +50,10 @@ vec gForceVectorPlanet(Planet planet1, Planet planet2, double G){
     return forceVector;
 }
 
+double potentialEnergy(Planet current, Planet other, double G){
+    return -G*other.mass*current.mass/norm(current.position - other.position);
+}
+
 void writeMatrixToFile(mat results, string filename, string directory){
     // Write the results (an Nx7 matrix) from an ODE solver to
     // a text file with 7 columns.
@@ -356,9 +360,9 @@ void task_3a_velocityVerlet(double G){
 
 void task_3b_velocityVerlet(double G){
     // Runs object oriented velocity Verlet. 
-    double dt = 1e-4;
+    double dt = 1e-2;
     //double tFinal = 10;
-    int N = 20;
+    int N = 1000;
     double tFinal = dt*N;
     
     vec omegaDirection = vec("0 0 1");
@@ -396,18 +400,20 @@ void task_3b_velocityVerlet(double G){
     earth.init(m_E, initialPosition, initialVelocity); 
 
     Solver my_solver;
-    my_solver.init();
+    my_solver.init(N);
     my_solver.add(sun);
     my_solver.add(earth);
 
     // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
     mat resultsVerlet = my_solver.run_velocityVerlet(tFinal, dt, G);
-    // my_solver.run_velocityVerlet(tFinal, dt, G); ? 
-    resultsVerlet.print("resultsVerlet");
-
-    string filename = "earth_sun_verlet_oo.csv";
+    string filename = "earth_sun_verlet.csv";
     string directory = "../results/3b_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
+
+    mat energyMatrix = my_solver.get_energy_matrix();
+    string filename1 = "earth_sun_energy.csv";
+    energyMatrix.save(csv_name(directory + filename1));
+
 }
 
 void task_3f_escape_velocity(double initialSpeed_kmPerSec, double G){
@@ -444,7 +450,7 @@ void task_3g_three_body(double G){
     double dt = 1e-4;
     double tFinal = 0.75;
     //int N = 5000; double tFinal = dt*N;
-    //int N = round(tFinal/dt)
+    int N = round(tFinal/dt);
     
     vec omegaDirection = vec("0 0 1");
 
@@ -482,7 +488,7 @@ void task_3g_three_body(double G){
     earth.init(m_E, initialPosition, initialVelocity); 
 
     Solver my_solver;
-    my_solver.init();
+    my_solver.init(N);
     my_solver.add(sun);
     my_solver.add(earth);
 

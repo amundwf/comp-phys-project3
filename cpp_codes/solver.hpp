@@ -14,13 +14,15 @@ class Solver{
 private:
     int total_planets;
     std::vector<Planet> all_planets;
+    arma::mat energyMatrix;
 public:
     // Functions
-    void init();
+    void init(int N);
     void add(Planet newPlanet);
-    //void gForceVector(Planet &current, Planet &other, double G);
     arma::mat run_velocityVerlet(double tFinal, double dt, double G);
+    arma::mat get_energy_matrix();
     int get_total_planets();
     std::vector<Planet> get_all_planets();
+    void totalEnergySystem(int i, double G);
 };
 #endif

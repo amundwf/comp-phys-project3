@@ -10,8 +10,9 @@
 using namespace std;
 using namespace arma;
 
-void Solver::init(){
+void Solver::init(int N){
     total_planets = 0;
+    energyMatrix = mat(N,3);
 }
 
 void Solver::add(Planet newPlanet){
@@ -28,24 +29,37 @@ int Solver::get_total_planets(){
 std::vector<Planet> Solver::get_all_planets(){
     return all_planets;
 }
-/*
-void Solver::gForceVector(Planet &current, Planet &other, double G){
-    // This returns the gravitational force *on* object 1 *from* object 2. Object 1
-    // is pulled towards object 2.
-    // Example: In sun-earth problem for the Earth orbit, the Earth is object 1 and
-    // the Sun is object 2. 
-    // G: gravitational constant.
-    double r = norm(other.position - current.position); // Relative distance between the objects.
 
-    double forceStrength = (G*current.mass*other.mass)/(r*r);   // Newton's gravitational law.
+void Solver::totalEnergySystem(int i, double G){
+    // Calculate the total energy of the system.
 
-    vec forceDirection = (other.position-current.position)/norm(other.position-current.position);   // This vector points *from*
-    // object 1 and *towards* object 2, meaning that object 1 is influenced by object 2.
-    current.forceVector += forceStrength*forceDirection;
+    // Initialise totalK to 0.
+    double totalKinetic = 0.0;
+    double totalPotential = 0.0;
+    for (int j=1; j <= total_planets-1; j++){
+        Planet current = all_planets[j];
 
-    //cout << "forceVector in gForceVector" << current.forceVector.t() << endl;
+        totalKinetic += current.kineticEnergy();
+
+        for (int k=0; k <= total_planets-1; k++){
+            // Skip if j == k.
+            if (j==k){
+                continue;
+            }
+            // This is the other planet we are comparing current to.
+            Planet other = all_planets[k];
+            totalPotential += potentialEnergy(current, other, G);
+        }
+    }
+    double totalEnergy = (totalKinetic + totalPotential);
+    energyMatrix(i, 0) = totalKinetic;
+    energyMatrix(i, 1) = totalPotential;
+    energyMatrix(i, 2) = totalEnergy;
 }
-*/
+
+mat Solver::get_energy_matrix(){
+    return energyMatrix;
+}
 
 mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
     int N = round(tFinal/dt);   // Number of timesteps.
@@ -63,21 +77,6 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
         t_all = join_cols(t_all, tList);
     }
     results.col(0) = t_all;
-
-    // Save initial velocity and position to matrix.
-    // Start at 1, skip the sun.
-    for (int i=1; i<total_planets; i++){
-        //Planet &current = all_planets[i];
-        Planet current = all_planets[i];
-
-        //Planet current = all_planets(i);
-        int x = N*(i-1);
-        vec currentPosition = current.getPosition();
-        vec currentVelocity = current.getVelocity();
-
-        results(x, span(1,3)) = current.position.t();
-        results(x, span(4,6)) = current.velocity.t();
-    }
 
     // Calculate the initial acceleration of all planets.
     // start at j=1 since we don't want to update the Sun.
@@ -97,19 +96,36 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
 
             // This is the other planet we are comparing current to.
             Planet &other = all_planets[k];
-            // Get the force from the other planet on the current planet:
+            // Get the force from the other planet on the current planet.
             force = gForceVectorPlanet(current, other, G);
             totalForce += force;
         }
         current.forceVector = totalForce;
-        // Get the acceleration:
         current.acceleration = current.forceVector / current.mass;
 
+        /*
         // Print some planet info.
         cout << "\nPlanet number: " << j << endl;
         cout <<"Intial acceleration: " << current.acceleration.t() << endl;
         cout <<"Intial forceVector: " << current.forceVector.t() << endl;
         cout <<"current.mass: " << current.mass << endl;
+        */
+    }
+
+    // Calculate initial total energy.
+    totalEnergySystem(0, G);
+
+    // Save initial velocity and position and total energy to matrix.
+    // Start at 1, skip the sun.
+    for (int i=1; i<total_planets; i++){
+        //Planet &current = all_planets[i];
+        Planet current = all_planets[i];
+
+        //vec currentPosition = current.getPosition();
+        //vec currentVelocity = current.getVelocity();
+        int x = N*(i-1);
+        results(x, span(1,3)) = current.position.t();
+        results(x, span(4,6)) = current.velocity.t();
     }
 
     // Loop for each time step.
@@ -156,6 +172,9 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
             results(i + N*(j-1), span(1,3)) = current.position.t();
             results(i + N*(j-1), span(4,6)) = current.velocity.t();
         }
+
+        // Print the total energy to results.
+        totalEnergySystem(i, G);
     }
     return results;
 }

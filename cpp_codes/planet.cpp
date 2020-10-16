@@ -22,3 +22,8 @@ vec Planet::getPosition(){
 vec Planet::getVelocity(){
     return velocity;
 }
+
+double Planet::kineticEnergy(){
+    return 0.5*mass*dot(velocity.t(),velocity);
+}
+
