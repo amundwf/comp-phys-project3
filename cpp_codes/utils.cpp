@@ -385,9 +385,9 @@ void task_3a_velocityVerlet(double G){
 void task_3b_velocityVerlet(double G){
     // Runs object oriented velocity Verlet. 
 
-    double dt = 1e-2;
+    double dt = 1e-3;
     //double tFinal = 10;
-    int N = 1000;
+    int N = 1e4;
     double tFinal = dt*N;
 
     // Initial position and velocity of Earth.
@@ -417,9 +417,9 @@ void task_3b_velocityVerlet(double G){
     string directory = "../results/3b_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
 
-    mat energyMatrix = my_solver.get_energy_matrix();
+    mat momEnergyMatrix = my_solver.get_momentum_energy_mat();
     string filename1 = "earth_sun_energy.csv";
-    energyMatrix.save(csv_name(directory + filename1));
+    momEnergyMatrix.save(csv_name(directory + filename1));
 
 }
 

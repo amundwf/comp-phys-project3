@@ -21,6 +21,6 @@ public:
     arma::vec getPosition();
     arma::vec getVelocity();
     double kineticEnergy();
-    
+    double angularMomentum();
 };
 #endif
