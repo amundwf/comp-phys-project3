@@ -20,5 +20,7 @@ public:
     void init(double M, arma::vec initialPosition, arma::vec initialVelocity);
     arma::vec getPosition();
     arma::vec getVelocity();
+    double kineticEnergy();
+    
 };
 #endif
