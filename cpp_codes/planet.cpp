@@ -24,6 +24,6 @@ vec Planet::getVelocity(){
 }
 
 double Planet::kineticEnergy(){
-    return 0.5*mass*sum(velocity*velocity);
+    return 0.5*mass*dot(velocity.t(),velocity);
 }
 
