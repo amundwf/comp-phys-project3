@@ -50,6 +50,10 @@ vec gForceVectorPlanet(Planet planet1, Planet planet2, double G){
     return forceVector;
 }
 
+double potentialEnergy(Planet current, Planet other, double G){
+    return -G*other.mass*current.mass/norm(current.position - other.position);
+}
+
 void writeMatrixToFile(mat results, string filename, string directory){
     // Write the results (an Nx7 matrix) from an ODE solver to
     // a text file with 7 columns.

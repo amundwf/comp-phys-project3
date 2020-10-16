@@ -12,6 +12,8 @@ arma::vec gForceVector(double G, double mass1, double mass2, arma::vec pos1, arm
 
 arma::vec gForceVectorPlanet(Planet planet1, Planet planet2, double G);
 
+double potentialEnergy(Planet current, Planet other, double G);
+
 void writeMatrixToFile(arma::mat results, std::string filename, std::string directory);
 
 // Convertors between velocity units:
