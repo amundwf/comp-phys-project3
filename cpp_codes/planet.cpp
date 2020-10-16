@@ -27,3 +27,7 @@ double Planet::kineticEnergy(){
     return 0.5*mass*dot(velocity.t(),velocity);
 }
 
+double Planet::angularMomentum(){
+    return mass*norm(cross(position, velocity));
+}
+
