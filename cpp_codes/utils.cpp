@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cmath>
 #include <armadillo>
+#include <sstream>  // std::stringstream objects
+#include <iomanip>  // std::setprecision?
 #include "utils.hpp"
 #include "solver.hpp" 
 #include "planet.hpp"
@@ -31,7 +33,7 @@ vec gForceVectorPlanet(Planet planet1, Planet planet2, double G){
     // This returns the gravitational force *on* planet 1 *from* planet 2. Object 1
     // is pulled towards object 2.
     // Example: In sun-earth problem for the Earth orbit, the Earth is object 1 and
-    // the Sun is object 2. 
+    // the Sun is object 2.
     // G: gravitational constant.
     // Units: length: au, mass: solar masses, time: years.
     vec pos1 = planet1.position;
@@ -47,6 +49,29 @@ vec gForceVectorPlanet(Planet planet1, Planet planet2, double G){
     // object 1 and *towards* object 2, meaning that object 1 is influenced by object 2.
     vec forceVector = forceStrength * forceDirection;
     //cout << forceVector.t() << endl;
+    return forceVector;
+}
+
+vec gForcePlanetBeta(Planet planet1, Planet planet2, double beta, double G){
+    // Testing other forms of the gravitational force from the inverse-square
+    // law.
+    // This returns the gravitational force *on* planet 1 *from* planet 2. Object 1
+    // is pulled towards object 2.
+    // G: gravitational constant.
+    // Units: length: au, mass: solar masses, time: years.
+    vec pos1 = planet1.position;
+    double mass1 = planet1.mass;
+    vec pos2 = planet2.position;
+    double mass2 = planet2.mass;
+
+    double r = norm(pos2 - pos1); // Relative distance between the objects.
+
+    // The gravitational force, now with a different power (beta) in the
+    // inverse law:
+    double forceStrength = (G*mass1*mass2)/pow(r,beta); 
+
+    vec forceDirection = (pos2-pos1)/norm(pos2-pos1);
+    vec forceVector = forceStrength * forceDirection;
     return forceVector;
 }
 
@@ -106,6 +131,7 @@ vec initial_earth_velocity(vec initialPosition){
     vec initialVelocity = v_E * v_E_dir;
     return initialVelocity;
 }
+
 mat run_forwardEuler(double tFinal, double dt, double G){
     // This function returns an Nx7 matrix where the columns contain the solution
     // data points (t, x, y, z, vx, vy, vz) (positions and velocities and their corresponding
@@ -245,7 +271,6 @@ mat forwardEuler(double tFinal, double dt, double m_SI, vec initialPosition, vec
     return results;
 }
 
-
 mat run_velocityVerlet(double tFinal, double dt, double G){
     vec omegaDirection = vec("0 0 1");
 
@@ -355,7 +380,6 @@ mat velocityVerlet(double tFinal, double dt, double m_SI, vec initialPosition, v
     return results;
 }
 
-
 void task_3a_forwardEuler(double G){
     // This runs problem 3a with the forward Euler algorithm.
     cout << "Running forward Euler:\n";
@@ -421,6 +445,67 @@ void task_3b_velocityVerlet(double G){
     string filename1 = "earth_sun_energy.csv";
     momEnergyMatrix.save(csv_name(directory + filename1));
 
+}
+
+void task_3e_force(double G){
+    // Runs object oriented velocity Verlet with varying versions of
+    // the gravitational force (determined by beta).
+    vec betaList = vec(11); // Values of beta between 2 and 3.
+    betaList(0) = 2.0;
+    double h_beta = 0.1; // Step size in beta
+    for (int i=1; i<=10; i++){betaList(i) = betaList(0) + i*h_beta;}
+
+    double dt = 1e-4;
+    double tFinal = 0.75; int N = round(tFinal/dt);
+    //int N = 1000; double tFinal = dt*N;
+    
+    // Initial position and velocity of Earth.
+    vec initialPosition_E = vec("1 0 0");
+    vec initialVelocity_E = initial_earth_velocity(initialPosition_E);
+    // initialVelocity_E = initial_earth_velocity_beta(initialPosition);
+    // ^ Does the velocity need to be different? Do we want to keep the same
+    // velocity or do we want to change the velocity to match the new centripetal
+    // acceleration from the new force law?
+
+    // Initial pos and vel of Sun.
+    vec sunPosition = vec("0 0 0"); 
+    vec sunVelocity = vec("0 0 0");
+    
+    double m_S = 1.0;
+    Planet sun;
+    sun.init(m_S, sunPosition, sunVelocity);
+
+    double m_E = get_earth_mass();
+    Planet earth;
+    earth.init(m_E, initialPosition_E, initialVelocity_E); 
+
+    Solver my_solver;
+    my_solver.init(N);
+    my_solver.add(sun);
+    my_solver.add(earth);
+
+    // The directory where the results will be saved:
+    string directory = "../results/3e_force/";
+
+    // For each beta value, get and print the solar system evolution:
+    for (auto beta : betaList){
+        mat results = my_solver.run_velocityVerletBeta(tFinal, dt, beta, G);
+
+        // Save one results file for each beta value:
+        stringstream betaStringstream;  // The numerical value of beta as a string
+        betaStringstream << setprecision(1) << fixed << beta;
+        string betaStr = betaStringstream.str();
+        // File name:
+        string filename = "3e_force_beta" + betaStr + ".csv";
+        cout << "filename (beta): " << filename << endl;
+        // Write the results matrix to the results file:
+        writeMatrixToFile(results, filename, directory);
+    }
+
+    // Write the number of beta values to a file so that the python
+    // script for this task can automatically read the number of
+    // beta values?:
+    // writeToFile('numBetaValues', betaList.n_elem); // <-- or something like that
 }
 
 void task_3f_escape_velocity(double initialSpeed_kmPerSec, double G){

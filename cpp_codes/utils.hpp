@@ -9,8 +9,8 @@
 
 // This file contains various functions, for running different parts of the project.
 arma::vec gForceVector(double G, double mass1, double mass2, arma::vec pos1, arma::vec pos2);
-
 arma::vec gForceVectorPlanet(Planet planet1, Planet planet2, double G);
+arma::vec gForcePlanetBeta(Planet planet1, Planet planet2, double beta, double G);
 
 double potentialEnergy(Planet current, Planet other, double G);
 
@@ -35,6 +35,8 @@ void task_3a_forwardEuler(double G);
 void task_3a_velocityVerlet(double G);
 
 void task_3b_velocityVerlet(double G);
+
+void task_3e_force(double G);
 
 void task_3f_escape_velocity(double initialSpeed_kmPerSec, double G);
 

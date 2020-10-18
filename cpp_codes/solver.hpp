@@ -20,6 +20,7 @@ public:
     void init(int N);
     void add(Planet newPlanet);
     arma::mat run_velocityVerlet(double tFinal, double dt, double G);
+    arma::mat run_velocityVerletBeta(double tFinal, double dt, double beta, double G);
     arma::mat get_momentum_energy_mat();
     int get_total_planets();
     std::vector<Planet> get_all_planets();
