@@ -65,10 +65,15 @@ vec gForcePlanetBeta(Planet planet1, Planet planet2, double beta, double G){
     double mass2 = planet2.mass;
 
     double r = norm(pos2 - pos1); // Relative distance between the objects.
+    // NB: If r=1, then pow(r,beta) = r^beta = 1^beta = 1 for all values of
+    // beta!
 
     // The gravitational force, now with a different power (beta) in the
     // inverse law:
-    double forceStrength = (G*mass1*mass2)/pow(r,beta); 
+    double forceStrength = (G*mass1*mass2)/pow(r,beta);
+    
+    // DEBUGGING:
+    //cout << "forceStrength: " << forceStrength << endl;
 
     vec forceDirection = (pos2-pos1)/norm(pos2-pos1);
     vec forceVector = forceStrength * forceDirection;
@@ -450,45 +455,58 @@ void task_3b_velocityVerlet(double G){
 void task_3e_force(double G){
     // Runs object oriented velocity Verlet with varying versions of
     // the gravitational force (determined by beta).
+
+    // The directory where the results will be saved:
+    string directory = "../results/3e_force/";
+
+    // Choose which values of beta to run through:
+    /*
     vec betaList = vec(11); // Values of beta between 2 and 3.
     betaList(0) = 2.0;
     double h_beta = 0.1; // Step size in beta
     for (int i=1; i<=10; i++){betaList(i) = betaList(0) + i*h_beta;}
+    */
+    vec betaList = vec("1.0, 2.0, 3.0, 4.0");
 
+    // Save the beta values in a file so that the python script
+    // can get the beta values:
+    betaList.save(csv_name(directory + "betaList.csv"));
+
+    // Timestep and iterations:
     double dt = 1e-4;
     double tFinal = 0.75; int N = round(tFinal/dt);
-    //int N = 1000; double tFinal = dt*N;
-    
-    // Initial position and velocity of Earth.
+    //int N = 500; double tFinal = dt*N;
+
+    double m_S = 1.0;
+    double m_E = get_earth_mass();
+
+    // Initial position and velocity of Earth:
     vec initialPosition_E = vec("1 0 0");
     vec initialVelocity_E = initial_earth_velocity(initialPosition_E);
     // initialVelocity_E = initial_earth_velocity_beta(initialPosition);
     // ^ Does the velocity need to be different? Do we want to keep the same
     // velocity or do we want to change the velocity to match the new centripetal
     // acceleration from the new force law?
-
-    // Initial pos and vel of Sun.
+    // Position and velocity of the Sun:
     vec sunPosition = vec("0 0 0"); 
     vec sunVelocity = vec("0 0 0");
-    
-    double m_S = 1.0;
-    Planet sun;
-    sun.init(m_S, sunPosition, sunVelocity);
-
-    double m_E = get_earth_mass();
-    Planet earth;
-    earth.init(m_E, initialPosition_E, initialVelocity_E); 
-
-    Solver my_solver;
-    my_solver.init(N);
-    my_solver.add(sun);
-    my_solver.add(earth);
-
-    // The directory where the results will be saved:
-    string directory = "../results/3e_force/";
 
     // For each beta value, get and print the solar system evolution:
     for (auto beta : betaList){
+        cout << "beta = " << beta << endl;
+        
+        // The planets and the solver must be re-initialized for each value of beta
+        // since we're starting over again for each beta value.
+        Planet sun;
+        sun.init(m_S, sunPosition, sunVelocity);
+        Planet earth;
+        earth.init(m_E, initialPosition_E, initialVelocity_E); 
+
+        Solver my_solver;
+        my_solver.init(N);
+        my_solver.add(sun);
+        my_solver.add(earth);
+
         mat results = my_solver.run_velocityVerletBeta(tFinal, dt, beta, G);
 
         // Save one results file for each beta value:
@@ -534,7 +552,7 @@ void task_3f_escape_velocity(double initialSpeed_kmPerSec, double G){
 
     string filename = "test_escape_verlet.csv";
     string directory = "../results/3f_escape_velocity/";
-    writeMatrixToFile(resultsVerlet, filename, directory); 
+    writeMatrixToFile(resultsVerlet, filename, directory);
 }
 
 void task_3g_three_body(double G){

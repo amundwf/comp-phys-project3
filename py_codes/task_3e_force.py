@@ -15,17 +15,25 @@ os.system("./main.out")
 
 # Read the comma-separated data files (two columns, x and y):
 directory = "../results/3e_force/"
+betaFilePath = directory + "betaList.csv"
 
-'''
-betaListLength = 11 # Number of beta values
-for i in range(1,betaListLength):
+# Load the list of beta values:
+betaValues = np.loadtxt(betaFilePath, skiprows=1, delimiter=",")
+betaValues = pd.DataFrame(betaValues, columns=["beta"])
+betaList = betaValues["beta"]
+print(betaList)
 
-    # Fix the filename (using string formatting) to match the
-    # filename in the results folder:   filename = "[something].csv"
-    #filePath = fullfile(directory, filename)
+betaListLength = len(betaList) # Number of beta values
+# Retrieve all the results from files for the different beta values:
+for beta in betaList:
+    # Match the file names in the results folder for 
+    # task 3e:
+    betaStr = format(beta,'.1f')
+    filename = '3e_force_beta' + betaStr + '.csv'
     filePath = os.path.join(directory, filename) # The full file path.
-    data = np.loadtxt(filePath, skiprows=1, delimiter=",")
 
+    # Load the data files:
+    data = np.loadtxt(filePath, skiprows=1, delimiter=",")
     # Get the columns as lists:
     data = pd.DataFrame(data, columns=["t", "x", "y", "z", "vx", "vy", "vz"])
 
@@ -37,20 +45,22 @@ for i in range(1,betaListLength):
     vyList = data["vy"]
     vzList = data["vz"]
 
-    #plot1, = plt.plot(xList, yList)#, label='velocityVerlet')
-'''
+    # Plot each orbit, for all different values of beta:
+    plot1, = plt.plot(xList, yList, label= "beta = " + betaStr)
 
-'''
+
 # Plot the sun at the center of the solar system:
 plt.plot(0, 0, 'r.', markersize=20)
 
 plt.grid()
+plt.legend()
 plt.axis('equal')
 plt.xlabel(r'$x$')
 plt.ylabel(r'$y$')
 plt.xlim(-1.5, 1.5)
 plt.ylim(-1.5, 1.5)
+
 plt.suptitle('Sun-Earth system with varying force law (different values of beta)')
 plt.show()
-'''
+
  

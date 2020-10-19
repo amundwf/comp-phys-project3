@@ -218,7 +218,7 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
         vec totalForce = vec("0 0 0");  // Instantiate the total force as zero
         // to start with and then add the forces from the sun and all planets.
         vec force;
-
+        // This loop includes the Sun.
         for (int k=0; k <= total_planets-1; k++){
             // Skip if j == k.
             if (j==k){
