@@ -64,18 +64,14 @@ vec gForcePlanetBeta(Planet planet1, Planet planet2, double beta, double G){
     vec pos2 = planet2.position;
     double mass2 = planet2.mass;
 
-    double r = norm(pos2 - pos1); // Relative distance between the objects.
+    double r = norm(pos2-pos1); // Relative distance between the objects.
     // NB: If r=1, then pow(r,beta) = r^beta = 1^beta = 1 for all values of
     // beta!
 
     // The gravitational force, now with a different power (beta) in the
     // inverse law:
     double forceStrength = (G*mass1*mass2)/pow(r,beta);
-    
-    // DEBUGGING:
-    //cout << "forceStrength: " << forceStrength << endl;
-
-    vec forceDirection = (pos2-pos1)/norm(pos2-pos1);
+    vec forceDirection = (pos2-pos1)/r;
     vec forceVector = forceStrength * forceDirection;
     return forceVector;
 }
@@ -124,10 +120,10 @@ double auPerYear_to_kmPerSec(double speed_auPerYear){
 }
 
 double get_earth_mass(){
-    // Masses of Sun and Earth in SI units (kg):
-    double m_S_SI = 1.989e30;
-    double m_E_SI = 5.972e24;
-    double m_E = m_E_SI/m_S_SI;
+    //double m_S_SI = 1.989e30; // kg
+    //double m_E_SI = 5.972e24; // kg
+    //double m_E = m_E_SI/m_S_SI;
+    double m_E = 3.002463426e-6; // Earth's mass in solar masses
     return m_E;
 }
 
@@ -471,12 +467,24 @@ void task_3e_force(double G){
 
     // Choose which values of beta to run through:
     /*
-    vec betaList = vec(11); // Values of beta between 2 and 3.
-    betaList(0) = 2.0;
-    double h_beta = 0.1; // Step size in beta
-    for (int i=1; i<=10; i++){betaList(i) = betaList(0) + i*h_beta;}
+    double betaMin = 2; double betaMax = 3; // Limit values of beta
+    int betaListLength = 6; // Number of elements in the beta list
+    double betaStepSize = (betaMax-betaMin)/(betaListLength-1); // Step size in the beta list
+    cout << "betaStepSize: " << betaStepSize << endl;
+    vec betaList = vec(betaListLength);
+    betaList(0) = betaMin;
+    betaList(betaListLength-1) = betaMax;
+    // Fill betaList:
+    for (int i=1; i<=betaListLength-2; i++){betaList(i) = betaList(0)+i*betaStepSize;}
     */
-    vec betaList = vec("1.0, 2.0, 3.0, 4.0");
+    double betaMin = 2.0; // Limit values of beta
+    int betaListLength = 6; // Number of elements in the beta list
+    double betaStepSize = 0.2; // Step size in the beta list
+    vec betaList = vec(betaListLength);
+    betaList(0) = betaMin;
+    // Fill betaList:
+    for (int i=1; i<=betaListLength-1; i++){betaList(i) = betaList(0)+i*betaStepSize;}
+    //vec betaList = vec("1.0, 2.0, 2.5, 3.0, 4.0");
 
     // Save the beta values in a file so that the python script
     // can get the beta values:
@@ -484,7 +492,7 @@ void task_3e_force(double G){
 
     // Timestep and iterations:
     double dt = 1e-4;
-    double tFinal = 0.75; int N = round(tFinal/dt);
+    double tFinal = 3; int N = round(tFinal/dt);
     //int N = 500; double tFinal = dt*N;
 
     double m_S = 1.0;
@@ -492,7 +500,11 @@ void task_3e_force(double G){
 
     // Initial position and velocity of Earth:
     vec initialPosition_E = vec("1 0 0");
-    vec initialVelocity_E = initial_earth_velocity(initialPosition_E);
+    // If doing the first part of 3e, choose circular orbit velocity:
+    //vec initialVelocity_E = initial_earth_velocity(initialPosition_E);
+    // If doing the second part of 3e, choose speed 5 AU/yr:
+    vec initialVelocity_E = vec("0 5 0");
+
     // initialVelocity_E = initial_earth_velocity_beta(initialPosition);
     // ^ Does the velocity need to be different? Do we want to keep the same
     // velocity or do we want to change the velocity to match the new centripetal
@@ -502,11 +514,12 @@ void task_3e_force(double G){
     vec sunVelocity = vec("0 0 0");
 
     // For each beta value, get and print the solar system evolution:
-    for (auto beta : betaList){
-        cout << "beta = " << beta << endl;
-        
+    //for (auto beta : betaList){
+    for (int i=0; i<=betaListLength-1; i++){
         // The planets and the solver must be re-initialized for each value of beta
         // since we're starting over again for each beta value.
+        double beta = betaList(i);
+
         Planet sun;
         sun.init(m_S, sunPosition, sunVelocity);
         Planet earth;
@@ -517,6 +530,7 @@ void task_3e_force(double G){
         my_solver.add(sun);
         my_solver.add(earth);
 
+        //cout << "beta: " << beta << endl;
         mat results = my_solver.run_velocityVerletBeta(tFinal, dt, beta, G);
 
         // Save one results file for each beta value:
@@ -525,7 +539,7 @@ void task_3e_force(double G){
         string betaStr = betaStringstream.str();
         // File name:
         string filename = "3e_force_beta" + betaStr + ".csv";
-        cout << "filename (beta): " << filename << endl;
+        //cout << "filename (beta): " << filename << endl;
         // Write the results matrix to the results file:
         writeMatrixToFile(results, filename, directory);
     }

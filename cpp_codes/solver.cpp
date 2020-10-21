@@ -77,8 +77,8 @@ mat Solver::get_angMomentum_energy_mat(){
 
 mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
     int N = round(tFinal/dt);   // Number of timesteps.
-    cout << "Number of timesteps: N = " << N << endl;
-    cout << "Number of planets = " << this->total_planets << endl;
+    //cout << "Number of timesteps: N = " << N << endl;
+    //cout << "Number of planets = " << this->total_planets << endl;
 
     // Set up matrix to contain all planet info.
     mat results = mat(N*(total_planets-1), 7);
@@ -197,8 +197,8 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
 
 mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double G){
     int N = round(tFinal/dt);   // Number of timesteps.
-    cout << "Number of timesteps: N = " << N << endl;
-    cout << "Number of planets = " << total_planets << endl;
+    //cout << "Number of timesteps: N = " << N << endl;
+    //cout << "Number of planets = " << total_planets << endl;
 
     // Set up matrix to contain all planet info.
     mat results = mat(N*(total_planets-1), 7);
@@ -245,7 +245,6 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
         cout <<"current.mass: " << current.mass << endl;
         */
     }
-
     // Calculate initial total energy.
     totalEnergySystem(0, G);
     totalAngularMomentumSystem(0);
@@ -263,9 +262,8 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
         results(x, span(4,6)) = current.velocity.t();
     }
 
-    // Loop for each time step.
+    // Loop through all timesteps:
     for(int i=1; i<=N-1; i++){
-
         // Evaluate the new position for all planets.
         // start at j=1 since we don't want to update the Sun.
         for (int j=1; j<total_planets; j++){
@@ -288,7 +286,7 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
                 }
                 // This is the other planet we are comparing current to.
                 Planet &other = all_planets[k];
-                force = gForceVectorPlanet(current, other, G);
+                force = gForcePlanetBeta(current, other, beta, G);
                 totalForce += force;
             }
             current.forceVector = totalForce;
