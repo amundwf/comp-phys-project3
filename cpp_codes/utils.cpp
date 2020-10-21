@@ -102,6 +102,17 @@ void writeMatrixToFile(mat results, string filename, string directory){
     results.save(csv_name(filePath, header));
 }
 
+void writeGeneralMatrixToCSV(mat results, field<string> columnLabels, string filename, string directory){
+    // columnLabels contains the labels of the columns, e.g. "t", "x", "y", "z" or "t", "L".
+    // It should have the same amount of elements as 'results' has columns.
+    ofstream ofile;
+    string filePath = directory + filename;
+
+    // Save matrix in CSV format with the column labels in the header:
+    //results.save(csv_name("results.csv", header));
+    results.save(csv_name(filePath, header));
+}
+
 double kmPerSec_to_auPerYear(double speed_kmPerSec){
     double oneKmPerSec_in_auPerYear = 0.21094502111897098; // This is 1 km/sec in units au/yr.
     return speed_kmPerSec * oneKmPerSec_in_auPerYear;
@@ -446,10 +457,9 @@ void task_3b_velocityVerlet(double G){
     string directory = "../results/3b_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
 
-    mat momEnergyMatrix = my_solver.get_momentum_energy_mat();
+    mat momEnergyMatrix = my_solver.get_angMomentum_energy_mat();
     string filename1 = "earth_sun_energy.csv";
     momEnergyMatrix.save(csv_name(directory + filename1));
-
 }
 
 void task_3e_force(double G){
