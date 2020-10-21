@@ -7,3 +7,5 @@ __pycache__/solver.cpython-37.pyc
 *.csv
 *.txt
 **testing.py
+
+py_codes/__pycache__/
