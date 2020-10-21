@@ -28,6 +28,8 @@ double Planet::kineticEnergy(){
 }
 
 double Planet::angularMomentum(){
+    // This function returns the absolute value of the angular momentum
+    // of the planet.
     return mass*norm(cross(position, velocity));
 }
 

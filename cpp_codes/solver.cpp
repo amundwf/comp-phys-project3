@@ -12,7 +12,10 @@ using namespace arma;
 
 void Solver::init(int N){
     total_planets = 0;
-    momentum_energy_mat = mat(N,4);
+    angMomentum_energy_mat = mat(N,4);
+    // angMomentum_energy_mat: 4 columns: total kinetic energy, 
+    // total potential energy, total mechanical energy, total angular
+    // momentum.
 }
 
 void Solver::add(Planet newPlanet){
@@ -33,12 +36,12 @@ std::vector<Planet> Solver::get_all_planets(){
 void Solver::totalAngularMomentumSystem(int i){
     // Calculate the total angular momentum of the system.
 
-    double totalMomentum = 0.0;
+    double totalAngMomentum = 0.0;
     for (int j=1; j <= total_planets-1; j++){
         Planet current = all_planets[j];
-        totalMomentum += current.angularMomentum();
+        totalAngMomentum += current.angularMomentum();
     }
-    momentum_energy_mat(i, 3) = totalMomentum;
+    angMomentum_energy_mat(i, 3) = totalAngMomentum;
 }
 
 void Solver::totalEnergySystem(int i, double G){
@@ -63,19 +66,19 @@ void Solver::totalEnergySystem(int i, double G){
         }
     }
     double totalEnergy = (totalKinetic + totalPotential);
-    momentum_energy_mat(i, 0) = totalKinetic;
-    momentum_energy_mat(i, 1) = totalPotential;
-    momentum_energy_mat(i, 2) = totalEnergy;
+    angMomentum_energy_mat(i, 0) = totalKinetic;
+    angMomentum_energy_mat(i, 1) = totalPotential;
+    angMomentum_energy_mat(i, 2) = totalEnergy;
 }
 
-mat Solver::get_momentum_energy_mat(){
-    return momentum_energy_mat;
+mat Solver::get_angMomentum_energy_mat(){
+    return angMomentum_energy_mat;
 }
 
 mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
     int N = round(tFinal/dt);   // Number of timesteps.
-    cout << "Number of timesteps: N = " << N << endl;
-    cout << "Number of planets = " << this->total_planets << endl;
+    //cout << "Number of timesteps: N = " << N << endl;
+    //cout << "Number of planets = " << this->total_planets << endl;
 
     // Set up matrix to contain all planet info.
     mat results = mat(N*(total_planets-1), 7);
@@ -194,8 +197,8 @@ mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
 
 mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double G){
     int N = round(tFinal/dt);   // Number of timesteps.
-    cout << "Number of timesteps: N = " << N << endl;
-    cout << "Number of planets = " << total_planets << endl;
+    //cout << "Number of timesteps: N = " << N << endl;
+    //cout << "Number of planets = " << total_planets << endl;
 
     // Set up matrix to contain all planet info.
     mat results = mat(N*(total_planets-1), 7);
@@ -242,7 +245,6 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
         cout <<"current.mass: " << current.mass << endl;
         */
     }
-
     // Calculate initial total energy.
     totalEnergySystem(0, G);
     totalAngularMomentumSystem(0);
@@ -260,9 +262,8 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
         results(x, span(4,6)) = current.velocity.t();
     }
 
-    // Loop for each time step.
+    // Loop through all timesteps:
     for(int i=1; i<=N-1; i++){
-
         // Evaluate the new position for all planets.
         // start at j=1 since we don't want to update the Sun.
         for (int j=1; j<total_planets; j++){
@@ -285,7 +286,7 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
                 }
                 // This is the other planet we are comparing current to.
                 Planet &other = all_planets[k];
-                force = gForceVectorPlanet(current, other, G);
+                force = gForcePlanetBeta(current, other, beta, G);
                 totalForce += force;
             }
             current.forceVector = totalForce;
