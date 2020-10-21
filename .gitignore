@@ -6,3 +6,4 @@ __pycache__/solver.cpython-37.pyc
 *.exe
 *.csv
 *.txt
+**testing.py
