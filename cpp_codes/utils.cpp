@@ -110,7 +110,7 @@ void writeGeneralMatrixToCSV(mat results, field<string> columnLabels, string fil
 
     // Save matrix in CSV format with the column labels in the header:
     //results.save(csv_name("results.csv", header));
-    results.save(csv_name(filePath, header));
+    results.save(csv_name(filePath, columnLabels));
 }
 
 double kmPerSec_to_auPerYear(double speed_kmPerSec){

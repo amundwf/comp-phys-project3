@@ -12,7 +12,10 @@ using namespace arma;
 
 void Solver::init(int N){
     total_planets = 0;
-    momentum_energy_mat = mat(N,4);
+    angMomentum_energy_mat = mat(N,4);
+    // angMomentum_energy_mat: 4 columns: total kinetic energy, 
+    // total potential energy, total mechanical energy, total angular
+    // momentum.
 }
 
 void Solver::add(Planet newPlanet){
@@ -33,12 +36,12 @@ std::vector<Planet> Solver::get_all_planets(){
 void Solver::totalAngularMomentumSystem(int i){
     // Calculate the total angular momentum of the system.
 
-    double totalMomentum = 0.0;
+    double totalAngMomentum = 0.0;
     for (int j=1; j <= total_planets-1; j++){
         Planet current = all_planets[j];
-        totalMomentum += current.angularMomentum();
+        totalAngMomentum += current.angularMomentum();
     }
-    momentum_energy_mat(i, 3) = totalMomentum;
+    angMomentum_energy_mat(i, 3) = totalAngMomentum;
 }
 
 void Solver::totalEnergySystem(int i, double G){
@@ -63,13 +66,13 @@ void Solver::totalEnergySystem(int i, double G){
         }
     }
     double totalEnergy = (totalKinetic + totalPotential);
-    momentum_energy_mat(i, 0) = totalKinetic;
-    momentum_energy_mat(i, 1) = totalPotential;
-    momentum_energy_mat(i, 2) = totalEnergy;
+    angMomentum_energy_mat(i, 0) = totalKinetic;
+    angMomentum_energy_mat(i, 1) = totalPotential;
+    angMomentum_energy_mat(i, 2) = totalEnergy;
 }
 
-mat Solver::get_momentum_energy_mat(){
-    return momentum_energy_mat;
+mat Solver::get_angMomentum_energy_mat(){
+    return angMomentum_energy_mat;
 }
 
 mat Solver::run_velocityVerlet(double tFinal, double dt, double G){
