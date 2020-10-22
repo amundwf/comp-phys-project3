@@ -19,8 +19,8 @@ public:
     // Functions
     void init(int N);
     void add(Planet newPlanet);
-    arma::mat run_velocityVerlet(double tFinal, double dt, double G);
     arma::mat run_velocityVerletBeta(double tFinal, double dt, double beta, double G);
+    arma::mat run_velocityVerletForceType(int functionNum, double tFinal, double dt, double G);
     arma::mat get_angMomentum_energy_mat();
     int get_total_planets();
     std::vector<Planet> get_all_planets();

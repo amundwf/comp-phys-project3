@@ -76,6 +76,27 @@ vec gForcePlanetBeta(Planet planet1, Planet planet2, double beta, double G){
     return forceVector;
 }
 
+vec gForceGenRelCorr(Planet planet1, Planet planet2, double G){
+    // This returns the gravitational force *on* planet 1 *from* planet 2. Object 1
+    // is pulled towards object 2.
+    double c = kmPerSec_to_auPerYear(299792.458);
+    vec pos1 = planet1.position;
+    double mass1 = planet1.mass;
+    vec pos2 = planet2.position;
+    double mass2 = planet2.mass;
+    double angMom1 = planet1.angularMomentum()/planet1.mass; 
+
+    double r = norm(pos2 - pos1); // Relative distance between the objects.
+
+    double forceStrength = (1 + 3*angMom1*(1/(r*r*c*c)))*(G*mass1*mass2)*(1/(r*r));   // Newton's gravitational law.
+
+    vec forceDirection = (pos2-pos1)/norm(pos2-pos1);   // This vector points *from*
+    // object 1 and *towards* object 2, meaning that object 1 is influenced by object 2.
+    vec forceVector = forceStrength * forceDirection;
+    //cout << forceVector.t() << endl;
+    return forceVector;
+}
+
 double potentialEnergy(Planet current, Planet other, double G){
     return -G*other.mass*current.mass/norm(current.position - other.position);
 }
@@ -125,6 +146,10 @@ double get_earth_mass(){
     //double m_E = m_E_SI/m_S_SI;
     double m_E = 3.002463426e-6; // Earth's mass in solar masses
     return m_E;
+}
+
+double get_mercury_mass(){
+    return 3.285e23/1.989e30;
 }
 
 vec initial_earth_velocity(vec initialPosition){
@@ -448,7 +473,7 @@ void task_3b_velocityVerlet(double G){
     my_solver.add(earth);
 
     // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
-    mat resultsVerlet = my_solver.run_velocityVerlet(tFinal, dt, G);
+    mat resultsVerlet = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
     string filename = "earth_sun_verlet.csv";
     string directory = "../results/3b_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
@@ -610,11 +635,58 @@ void task_3g_three_body(double G){
     my_solver.add(earth);
 
     // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
-    mat resultsVerlet = my_solver.run_velocityVerlet(tFinal, dt, G);
+    mat resultsVerlet = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
     // my_solver.run_velocityVerlet(tFinal, dt, G); ? 
     //resultsVerlet.print("resultsVerlet");
 
     string filename = "three_body_verlet.csv";
     string directory = "../results/3g_three_body/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
+}
+
+void task_3i_mercury_precession(double G){
+    // Runs object oriented velocity Verlet. 
+
+    double dt = 1e-3;
+    double tFinal = 10;
+    int N = round(tFinal/dt);
+    cout << N << endl;
+
+    // Initial position and velocity of Mercury.
+    vec initialPosition = vec("1 0 0");
+    vec initialVelocity = initial_earth_velocity(initialPosition);
+    //vec initialPosition = vec("0.307499 0 0");
+    //vec initialVelocity = vec("12.44 0 0");
+
+    // Initial pos and vel of Sun.
+    vec sunPosition = vec("0 0 0"); 
+    vec sunVelocity = vec("0 0 0");
+    
+    double m_S = 1.0;
+    Planet sun;
+    sun.init(m_S, sunPosition, sunVelocity);    
+    /*
+    double m_E = get_mercury_mass();
+    Planet mercury;
+    mercury.init(m_E, initialPosition, initialVelocity); 
+    */
+    double m_E = get_earth_mass();
+    Planet earth;
+    earth.init(m_E, initialPosition, initialVelocity); 
+
+    Solver my_solver;
+    my_solver.init(N);
+    my_solver.add(sun);
+    my_solver.add(earth);
+    //my_solver.add(mercury);
+
+    // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
+    mat resultsVerlet = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
+    string filename = "mercury_sun_verlet.csv";
+    string directory = "../results/3i_mercury_precession/";
+    writeMatrixToFile(resultsVerlet, filename, directory); 
+
+    mat momEnergyMatrix = my_solver.get_angMomentum_energy_mat();
+    string filename1 = "mercury_sun_energy.csv";
+    momEnergyMatrix.save(csv_name(directory + filename1));
 }
