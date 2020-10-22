@@ -648,15 +648,13 @@ void task_3i_mercury_precession(double G){
     // Runs object oriented velocity Verlet. 
 
     double dt = 1e-3;
-    double tFinal = 10;
+    double tFinal = 100;
     int N = round(tFinal/dt);
     cout << N << endl;
 
     // Initial position and velocity of Mercury.
-    vec initialPosition = vec("1 0 0");
-    vec initialVelocity = initial_earth_velocity(initialPosition);
-    //vec initialPosition = vec("0.307499 0 0");
-    //vec initialVelocity = vec("12.44 0 0");
+    vec initialPosition = vec("0.307499 0 0");
+    vec initialVelocity = vec("0 12.44 0");
 
     // Initial pos and vel of Sun.
     vec sunPosition = vec("0 0 0"); 
@@ -665,23 +663,18 @@ void task_3i_mercury_precession(double G){
     double m_S = 1.0;
     Planet sun;
     sun.init(m_S, sunPosition, sunVelocity);    
-    /*
+    
     double m_E = get_mercury_mass();
     Planet mercury;
     mercury.init(m_E, initialPosition, initialVelocity); 
-    */
-    double m_E = get_earth_mass();
-    Planet earth;
-    earth.init(m_E, initialPosition, initialVelocity); 
 
     Solver my_solver;
     my_solver.init(N);
     my_solver.add(sun);
-    my_solver.add(earth);
-    //my_solver.add(mercury);
+    my_solver.add(mercury);
 
     // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
-    mat resultsVerlet = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
+    mat resultsVerlet = my_solver.run_velocityVerletForceType(1, tFinal, dt, G);
     string filename = "mercury_sun_verlet.csv";
     string directory = "../results/3i_mercury_precession/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
