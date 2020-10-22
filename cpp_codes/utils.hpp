@@ -11,6 +11,7 @@
 arma::vec gForceVector(double G, double mass1, double mass2, arma::vec pos1, arma::vec pos2);
 arma::vec gForceVectorPlanet(Planet planet1, Planet planet2, double G);
 arma::vec gForcePlanetBeta(Planet planet1, Planet planet2, double beta, double G);
+arma::vec gForceGenRelCorr(Planet planet1, Planet planet2, double G, double c);
 
 double potentialEnergy(Planet current, Planet other, double G);
 
