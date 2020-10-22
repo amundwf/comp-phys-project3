@@ -473,7 +473,7 @@ void task_3b_velocityVerlet(double G){
     my_solver.add(earth);
 
     // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
-    mat resultsVerlet = my_solver.run_velocityVerlet(tFinal, dt, G);
+    mat resultsVerlet = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
     string filename = "earth_sun_verlet.csv";
     string directory = "../results/3b_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
@@ -635,7 +635,7 @@ void task_3g_three_body(double G){
     my_solver.add(earth);
 
     // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
-    mat resultsVerlet = my_solver.run_velocityVerlet(tFinal, dt, G);
+    mat resultsVerlet = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
     // my_solver.run_velocityVerlet(tFinal, dt, G); ? 
     //resultsVerlet.print("resultsVerlet");
 
@@ -648,7 +648,7 @@ void task_3i_mercury_precession(double G){
     // Runs object oriented velocity Verlet. 
 
     double dt = 1e-3;
-    double tFinal = 100;
+    double tFinal = 10;
     int N = round(tFinal/dt);
     cout << N << endl;
 
@@ -681,7 +681,7 @@ void task_3i_mercury_precession(double G){
     //my_solver.add(mercury);
 
     // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
-    mat resultsVerlet = my_solver.run_velocityVerletForceType(1, tFinal, dt, G);
+    mat resultsVerlet = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
     string filename = "mercury_sun_verlet.csv";
     string directory = "../results/3i_mercury_precession/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
