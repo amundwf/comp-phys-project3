@@ -18,7 +18,6 @@ def calculateAngularMomentumList(xList, yList, zList, vxList, vyList, vzList, ma
         angMomentum = mass * np.cross(position,velocity)
         # Get the absolute value and store it in the vector:
         angMomentumAbsList[i] = np.linalg.norm(angMomentum)
-
     return angMomentumAbsList
 
 def calculateTotalEnergyList(xList, yList, zList, vxList, vyList, vzList, massThis, massOther):
@@ -45,5 +44,19 @@ def calculateTotalEnergyList(xList, yList, zList, vxList, vyList, vzList, massTh
         K = 0.5*massThis*(v**2)
         E = U + K
         totalEnergyList[i] = E
-
     return totalEnergyList
+
+def calculateDistanceList(xList, yList, zList):
+    # Given data lists containing positions and velocities (x,y,z)
+    # as functions of time, this function returns a vector containing the
+    # corresponding distances (r) absolute values at each timestep.
+    # Also, the mass of the object (planet) is a required input.
+    listLength = len(xList)
+    distanceList = np.zeros(listLength)
+
+    # Calculate the distances. In order to avoid using too much memory
+    # by creating large matrices, only one-dimensional lists are used.
+    for i in range(listLength):
+        position = np.array([xList[i], yList[i], zList[i]])
+        distanceList[i] = np.linalg.norm(position)
+    return distanceList

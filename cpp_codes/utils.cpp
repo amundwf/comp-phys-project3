@@ -502,6 +502,7 @@ void task_3e_force(double G){
     // Fill betaList:
     for (int i=1; i<=betaListLength-2; i++){betaList(i) = betaList(0)+i*betaStepSize;}
     */
+    /*
     double betaMin = 2.0; // Limit values of beta
     int betaListLength = 6; // Number of elements in the beta list
     double betaStepSize = 0.2; // Step size in the beta list
@@ -509,7 +510,10 @@ void task_3e_force(double G){
     betaList(0) = betaMin;
     // Fill betaList:
     for (int i=1; i<=betaListLength-1; i++){betaList(i) = betaList(0)+i*betaStepSize;}
-    //vec betaList = vec("1.0, 2.0, 2.5, 3.0, 4.0");
+    */
+    vec betaList = vec("2.0 2.2 2.4 2.6 2.8 2.9 3.0");
+    double betaListLength = betaList.n_elem;
+    //cout << "betaListLength" << betaListLength << endl;
 
     // Save the beta values in a file so that the python script
     // can get the beta values:
@@ -517,7 +521,7 @@ void task_3e_force(double G){
 
     // Timestep and iterations:
     double dt = 1e-4;
-    double tFinal = 3; int N = round(tFinal/dt);
+    double tFinal = 5; int N = round(tFinal/dt);
     //int N = 500; double tFinal = dt*N;
 
     double m_S = 1.0;
@@ -560,7 +564,7 @@ void task_3e_force(double G){
 
         // Save one results file for each beta value:
         stringstream betaStringstream;  // The numerical value of beta as a string
-        betaStringstream << setprecision(1) << fixed << beta;
+        betaStringstream << setprecision(2) << fixed << beta;
         string betaStr = betaStringstream.str();
         // File name:
         string filename = "3e_force_beta" + betaStr + ".csv";
