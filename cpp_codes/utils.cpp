@@ -127,6 +127,10 @@ double get_earth_mass(){
     return m_E;
 }
 
+double get_mercury_mass(){
+    return 3.285e23/1.989e30;
+}
+
 vec initial_earth_velocity(vec initialPosition){
     // Return the earth initial velocity from position. 
     
@@ -617,4 +621,8 @@ void task_3g_three_body(double G){
     string filename = "three_body_verlet.csv";
     string directory = "../results/3g_three_body/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
+}
+
+void task_3i_mercury_precession(double G){
+
 }
