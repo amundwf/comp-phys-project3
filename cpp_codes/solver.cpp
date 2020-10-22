@@ -336,6 +336,8 @@ void Solver::eval_perihelion(Planet current){
     if ( (signbit(current.old_position[1]*current.position[1])) && !(signbit(current.position[0])) ){
         // Store and reset perihelion.
         current.perihelion_pos.print("perihelion position");
+        double tan = current.perihelion_pos[1]/current.perihelion_pos[0];
+        cout << tan << endl;
         current.perihelion_mat(current.revolution, span(0,2)) = current.perihelion_pos.t();
         current.revolution++;
         current.perihelion = 500.0;
