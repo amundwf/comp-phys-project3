@@ -316,12 +316,13 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
 mat Solver::run_velocityVerletForceType(int functionNum, double tFinal, double dt, double G){
     // General solver for velocity Verlet, i.e you can give it the force
     // function of your choice. 
-
-    functions[0] = gForceVectorPlanet();
+    std::array<std::function<vec(Planet current, Planet other, double G)>, 2> functions = {&gForceVectorPlanet, &gForceGenRelCorr};
+    //vector<function> functions(3);
+    //functions[0] = &gForceVectorPlanet;
     // Beta has an extra variable, could init beta as None. and use *args like 
     // in python.
-    //functions[1] = gForcePlanetBeta();
-    functions[2] = gForceGenRelCorr();
+    //functions[1] = &gForcePlanetBeta;
+    //functions[1] = &gForceGenRelCorr;
 
     int N = round(tFinal/dt);
 
