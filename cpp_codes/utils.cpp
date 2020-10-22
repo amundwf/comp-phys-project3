@@ -648,7 +648,7 @@ void task_3i_mercury_precession(double G){
     // Runs object oriented velocity Verlet. 
 
     double dt = 1e-3;
-    double tFinal = 100;
+    double tFinal = 10;
     int N = round(tFinal/dt);
     cout << N << endl;
 
@@ -682,4 +682,13 @@ void task_3i_mercury_precession(double G){
     mat momEnergyMatrix = my_solver.get_angMomentum_energy_mat();
     string filename1 = "mercury_sun_energy.csv";
     momEnergyMatrix.save(csv_name(directory + filename1));
+
+    vector<Planet> all_planets = my_solver.get_all_planets();
+    mat peri = all_planets[1].get_perihelion_mat();
+    string filename_peri = "perihelion.csv";
+
+    field<string> header(peri.n_cols);
+    header(0) = "x"; header(1) = "y"; header(2) = "z";
+    writeGeneralMatrixToCSV(peri, header, filename_peri, directory);
+    
 }

@@ -15,6 +15,7 @@ private:
     int total_planets;
     std::vector<Planet> all_planets;
     arma::mat angMomentum_energy_mat;
+    
 public:
     // Functions
     void init(int N);
@@ -26,5 +27,6 @@ public:
     std::vector<Planet> get_all_planets();
     void totalEnergySystem(int i, double G);
     void totalAngularMomentumSystem(int i);
+    void eval_perihelion(Planet current);
 };
 #endif

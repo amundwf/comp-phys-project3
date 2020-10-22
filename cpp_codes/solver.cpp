@@ -16,6 +16,7 @@ void Solver::init(int N){
     // angMomentum_energy_mat: 4 columns: total kinetic energy, 
     // total potential energy, total mechanical energy, total angular
     // momentum.
+     
 }
 
 void Solver::add(Planet newPlanet){
@@ -263,6 +264,10 @@ mat Solver::run_velocityVerletForceType(int functionNum, double tFinal, double d
         // start at j=1 since we don't want to update the Sun.
         for (int j=1; j<total_planets; j++){
             Planet &current = all_planets[j];
+
+            // Store the old position just for the perihelion calculation.
+            current.old_position = current.position;
+
             current.previous_acceleration = current.acceleration;
             current.position += dt*current.velocity + 0.5*dt*dt*current.previous_acceleration;
         }
@@ -304,6 +309,36 @@ mat Solver::run_velocityVerletForceType(int functionNum, double tFinal, double d
         // Print the total energy to results.
         totalEnergySystem(i, G);
         totalAngularMomentumSystem(i);
+
+        // Evaluate the perihelion of each planet.
+        for (int j=1; j<total_planets; j++){
+            Planet &current = all_planets[j];
+            eval_perihelion(current);
+        }
     }
     return results;
+}
+
+void Solver::eval_perihelion(Planet current){
+    // Evaluate the minimum relative distance of the planet
+    // to the Sun. Compare this to the perihelion at the
+    // previous time step.
+
+    vec pos1 = current.position;
+    vec sun_pos = all_planets[0].position;
+    double r = norm(sun_pos - pos1);
+
+    if (r < current.perihelion){
+        current.perihelion = r;
+        current.perihelion_pos = pos1;
+    }
+
+    if ( (signbit(current.old_position[1]*current.position[1])) && !(signbit(current.position[0])) ){
+        // Store and reset perihelion.
+        current.perihelion_pos.print("perihelion position");
+        current.perihelion_mat(current.revolution, span(0,2)) = current.perihelion_pos.t();
+        current.revolution++;
+        current.perihelion = 500.0;
+
+    }
 }
