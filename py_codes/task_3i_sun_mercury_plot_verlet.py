@@ -40,3 +40,20 @@ plt.xlim(-1, 1)
 plt.ylim(-1, 1)
 plt.suptitle('Mercury-Sun system, velocity Verlet')
 plt.show()
+
+plt.close()
+
+filename = "perihelion.csv"
+filePath = os.path.join(directory, filename) 
+data = np.loadtxt(filePath, skiprows=1, delimiter=",")
+
+# Get the columns as lists:
+data = pd.DataFrame(data, columns=["t", "x", "y"])
+
+plt.plot(data["x"], data["y"])
+plt.grid()
+plt.xlabel(r'$x$')
+plt.ylabel(r'$y$')
+plt.xlim(-1, 1)
+plt.ylim(-1, 1)
+plt.show()
