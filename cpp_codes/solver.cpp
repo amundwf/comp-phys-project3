@@ -16,6 +16,9 @@ void Solver::init(int N){
     // angMomentum_energy_mat: 4 columns: total kinetic energy, 
     // total potential energy, total mechanical energy, total angular
     // momentum.
+    perihelion_mat_solver = mat(1000,3);
+    revolution = 0;
+     
 }
 
 void Solver::add(Planet newPlanet){
@@ -263,6 +266,10 @@ mat Solver::run_velocityVerletForceType(int functionNum, double tFinal, double d
         // start at j=1 since we don't want to update the Sun.
         for (int j=1; j<total_planets; j++){
             Planet &current = all_planets[j];
+
+            // Store the old position just for the perihelion calculation.
+            current.old_position = current.position;
+
             current.previous_acceleration = current.acceleration;
             current.position += dt*current.velocity + 0.5*dt*dt*current.previous_acceleration;
         }
@@ -304,6 +311,45 @@ mat Solver::run_velocityVerletForceType(int functionNum, double tFinal, double d
         // Print the total energy to results.
         totalEnergySystem(i, G);
         totalAngularMomentumSystem(i);
+
+        // Evaluate the perihelion of each planet.
+        for (int j=1; j<total_planets; j++){
+            Planet current = all_planets[j];
+            vec perihelion_pos = eval_perihelion(current);
+
+            if (perihelion_pos.n_elem == 3){
+                perihelion_mat_solver(revolution, span(0,2)) = perihelion_pos.t();
+            }
+        }
     }
     return results;
+}
+
+vec Solver::eval_perihelion(Planet &current){
+    // Evaluate the minimum relative distance of the planet
+    // to the Sun. Compare this to the perihelion at the
+    // previous time step.
+
+    vec pos1 = current.position;
+    vec sun_pos = all_planets[0].position;
+    double r = norm(sun_pos - pos1);
+    
+    if (r < current.perihelion){
+        current.perihelion = r;
+        current.perihelion_pos = pos1;
+    }
+
+    vec empty = vec("0 0");
+
+    // If the planet crosses the positive x axis, store and reset the perihelion.
+    if ( (signbit(current.old_position[1]*current.position[1])) && !(signbit(current.position[0])) ){
+        // Store and reset perihelion.
+
+        revolution += 1;
+        current.perihelion = 500.0; // Reset to a large value.
+        return current.perihelion_pos;
+    }
+    else {
+        return empty;
+    }
 }

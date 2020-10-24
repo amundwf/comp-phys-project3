@@ -13,6 +13,9 @@ void Planet::init(double M, vec initialPosition, vec initialVelocity){
     forceVector = zeros<vec>(3);
     previous_acceleration = zeros<vec>(3);
     acceleration = zeros<vec>(3);
+    perihelion_mat = mat(1000,3);
+    perihelion = 500.0; // 500 AU, some large number.
+    revolution = 0;
 }
 
 vec Planet::getPosition(){
@@ -33,3 +36,6 @@ double Planet::angularMomentum(){
     return mass*norm(cross(position, velocity));
 }
 
+mat Planet::get_perihelion_mat(){
+    return perihelion_mat;
+}
