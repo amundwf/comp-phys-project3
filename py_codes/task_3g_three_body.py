@@ -5,13 +5,14 @@ import re
 import os
 
 
-### Optional: Run the C++ program to get an updated data file. 
-# Compile and run the C++ files (this is exactly what is in the makefile):
-os.system("echo compiling C++ codes...")
-os.system("g++ -o main.out ../cpp_codes/main.cpp ../cpp_codes/utils.cpp ../cpp_codes/planet.cpp ../cpp_codes/solver.cpp -larmadillo")
-os.system("echo executing...")
-os.system("./main.out")
-###
+runCppCode = True
+if runCppCode == True: 
+    # Compile and run the C++ files (this is exactly what is in the makefile):
+    os.system("echo compiling C++ codes...")
+    os.system("g++ -o main.out ../cpp_codes/main.cpp ../cpp_codes/utils.cpp ../cpp_codes/planet.cpp ../cpp_codes/solver.cpp -larmadillo")
+    os.system("echo executing...")
+    os.system("./main.out")
+
 
 # Read the comma-separated data files (two columns, x and y):
 directory = "../results/3g_three_body/"

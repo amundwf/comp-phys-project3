@@ -511,6 +511,7 @@ void task_3e_force(double G){
     // Fill betaList:
     for (int i=1; i<=betaListLength-1; i++){betaList(i) = betaList(0)+i*betaStepSize;}
     */
+    //vec betaList = vec("2.0 2.2 2.4 2.6 2.8 2.9 3.0");
     vec betaList = vec("2.0 2.2 2.4 2.6 2.8 2.9 3.0");
     double betaListLength = betaList.n_elem;
     //cout << "betaListLength" << betaListLength << endl;
@@ -530,9 +531,9 @@ void task_3e_force(double G){
     // Initial position and velocity of Earth:
     vec initialPosition_E = vec("1 0 0");
     // If doing the first part of 3e, choose circular orbit velocity:
-    //vec initialVelocity_E = initial_earth_velocity(initialPosition_E);
+    vec initialVelocity_E = initial_earth_velocity(initialPosition_E);
     // If doing the second part of 3e, choose speed 5 AU/yr:
-    vec initialVelocity_E = vec("0 5 0");
+    //vec initialVelocity_E = vec("0 5 0");
 
     // initialVelocity_E = initial_earth_velocity_beta(initialPosition);
     // ^ Does the velocity need to be different? Do we want to keep the same
@@ -615,35 +616,44 @@ void task_3g_three_body(double G){
     //int N = 5000; double tFinal = dt*N;
     int N = round(tFinal/dt);
     
-    // Initial position and velocity of Earth.
-    vec initialPosition = vec("1 0 0");
-    vec initialVelocity = initial_earth_velocity(initialPosition);
-
-    // Initial pos and vel of Sun.
+    // Initial positions and velocities:
+    // Sun:
     vec sunPosition = vec("0 0 0"); 
     vec sunVelocity = vec("0 0 0");
-    
+    // Earth:
+    vec initialPosition = vec("1 0 0");
+    vec initialVelocity = initial_earth_velocity(initialPosition);
+    // Jupiter: (Retrieved from NASA webpage)
+    //vec initPosJupiter = vec("....");
+    //vec initVelJupiter = vec("....");
+
     initialVelocity.t().print("initialVelocity: ");
-    
-    double m_S = 1.0;
+
+    // Initialize planets (the Sun must be initialized first):    
     Planet sun;
+    double m_S = 1.0;
     sun.init(m_S, sunPosition, sunVelocity);    
 
-    double m_E = get_earth_mass();
     Planet earth;
-    earth.init(m_E, initialPosition, initialVelocity); 
+    double m_E = get_earth_mass();
+    earth.init(m_E, initialPosition, initialVelocity);
+
+    //Planet jupiter;
+    //double m_J = 9.545536837e-4 // in solar masses
+    //jupiter.init(m_J, initPosJupiter, initVelJupiter);
 
     Solver my_solver;
     my_solver.init(N);
     my_solver.add(sun);
     my_solver.add(earth);
+    //my_solver.add(jupiter);
 
     // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
     mat resultsVerlet = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
     // my_solver.run_velocityVerlet(tFinal, dt, G); ? 
     //resultsVerlet.print("resultsVerlet");
 
-    string filename = "three_body_verlet.csv";
+    string filename = "three_body.csv";
     string directory = "../results/3g_three_body/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
 }

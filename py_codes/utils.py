@@ -17,7 +17,8 @@ def calculateAngularMomentumList(xList, yList, zList, vxList, vyList, vzList, ma
         velocity = np.array([vxList[i], vyList[i], vzList[i]])
         angMomentum = mass * np.cross(position,velocity)
         # Get the absolute value and store it in the vector:
-        angMomentumAbsList[i] = np.linalg.norm(angMomentum)
+        angMomentumAbs = np.linalg.norm(angMomentum)
+        angMomentumAbsList[i] = angMomentumAbs
     return angMomentumAbsList
 
 def calculateTotalEnergyList(xList, yList, zList, vxList, vyList, vzList, massThis, massOther):
@@ -40,7 +41,7 @@ def calculateTotalEnergyList(xList, yList, zList, vxList, vyList, vzList, massTh
         v = np.linalg.norm(velocity, ord=2)
 
         # Calculate the potential (U), kinetic (K) and total (E) energies:
-        U = -(G*massThis*massOther)/(r**2)
+        U = -(G*massThis*massOther)/r
         K = 0.5*massThis*(v**2)
         E = U + K
         totalEnergyList[i] = E

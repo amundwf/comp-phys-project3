@@ -15,14 +15,14 @@ int main(){
 
     //task_3b_velocityVerlet(G);
     
-    //task_3e_force(G);
+    task_3e_force(G);
 
     //double initialSpeed_kmPerSec = 40;
     //task_3f_escape_velocity(initialSpeed_kmPerSec, G);
 
     //task_3g_three_body(G);
 
-    task_3i_mercury_precession(G);
+    //task_3i_mercury_precession(G);
 
     return 0;
 }
