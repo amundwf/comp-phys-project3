@@ -1,5 +1,5 @@
 # Simulating the Solar System
-##Repository for project 3 in FYS4150 computational physics.
+## Repository for project 3 in FYS4150 computational physics.
 
 This is a project which simulated the motion of the planets in the Solar System. Both the Velocity Verlet and Euler's forward method area available in the code to be used. However, in the Velocity Verlet method is the only object oriented method. The object oriented code is composed of a Solver class to which planets can be added to and then run.  The Solver class does this by calling upon another class, Planet, to create planet object which it uses to update the position and velocity of the planets. Other functionaltiy exists for calculating the angular momentum, energy, percession of Mercury's perihelion and investigating the power law in Newton's equations. Each task is broken down in utils.cpp and each one can be run from main.cpp. The results are stored after the code runs in the results folder and can be plotted using the various python scripts. Some example plots are given in the results folder also. 
 
