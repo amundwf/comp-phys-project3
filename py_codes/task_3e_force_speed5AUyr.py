@@ -79,7 +79,7 @@ if codeword == 'orbits': # Plot the orbits:
         data = np.loadtxt(filePath, skiprows=1, delimiter=",")
         # Get the columns as lists:
         data = pd.DataFrame(data, columns=["t", "x", "y", "z", "vx", "vy", "vz"])
-        tList = data["t"] # Same for all values of omega_r
+        tList = data["t"]
         xList = data["x"]
         yList = data["y"]
         zList = data["z"]
@@ -110,7 +110,7 @@ elif codeword == 'totalEnergyAngMomentum': # Plot angular momentum:
         data = np.loadtxt(filePath, skiprows=1, delimiter=",")
         # Get the columns as lists:
         data = pd.DataFrame(data, columns=["t", "x", "y", "z", "vx", "vy", "vz"])
-        tList = data["t"] # Same for all values of omega_r
+        tList = data["t"]
         xList = data["x"]
         yList = data["y"]
         zList = data["z"]
@@ -156,7 +156,7 @@ elif codeword == 'totalEnergy':
         data = np.loadtxt(filePath, skiprows=1, delimiter=",")
         # Get the columns as lists:
         data = pd.DataFrame(data, columns=["t", "x", "y", "z", "vx", "vy", "vz"])
-        tList = data["t"] # Same for all values of omega_r
+        tList = data["t"]
         xList = data["x"]
         yList = data["y"]
         zList = data["z"]
@@ -196,7 +196,7 @@ elif codeword == 'angularMomentum': # Plot angular momentum:
         data = np.loadtxt(filePath, skiprows=1, delimiter=",")
         # Get the columns as lists:
         data = pd.DataFrame(data, columns=["t", "x", "y", "z", "vx", "vy", "vz"])
-        tList = data["t"] # Same for all values of omega_r
+        tList = data["t"]
         xList = data["x"]
         yList = data["y"]
         zList = data["z"]
@@ -241,7 +241,7 @@ elif codeword == 'distance':
         data = np.loadtxt(filePath, skiprows=1, delimiter=",")
         # Get the columns as lists:
         data = pd.DataFrame(data, columns=["t", "x", "y", "z", "vx", "vy", "vz"])
-        tList = data["t"] # Same for all values of omega_r
+        tList = data["t"]
         xList = data["x"]
         yList = data["y"]
         zList = data["z"]

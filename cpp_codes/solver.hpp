@@ -12,7 +12,7 @@
 
 class Solver{
 private:
-    int total_planets;
+    int total_planets; // The number of planets added (including the Sun)
     std::vector<Planet> all_planets;
     arma::mat angMomentum_energy_mat;
 public:

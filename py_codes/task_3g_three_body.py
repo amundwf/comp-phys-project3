@@ -14,30 +14,52 @@ if runCppCode == True:
     os.system("./main.out")
 
 
-# Read the comma-separated data files (two columns, x and y):
+# The results directory:
 directory = "../results/3g_three_body/"
 
-# One planet:
-filename = "three_body_verlet.csv"
-#filePath = fullfile(directory, filename)
-filePath = os.path.join(directory, filename) # The full file path.
-data = np.loadtxt(filePath, skiprows=1, delimiter=",")
 
-# Get the columns as lists:
-data = pd.DataFrame(data, columns=["t", "x", "y", "z", "vx", "vy", "vz"])
+# Read the planet names from the planet_names.csv file:
+'''
+planetNamesData = np.loadtxt(directory + "planet_names.csv", skiprows=0, delimiter=",")
+planetNamesData = pd.DataFrame(planetNamesData, columns=["planet_names"])
+planetNames = planetNamesData["planet_names"]
+'''
+# Read in the file as a dataframe:
+planetNamesDF = pd.read_csv(directory + "planet_names.csv", header=None, names=['planets'])
+# Convert the dataframe to a list (of strings):
+planetNames = planetNamesDF['planets'].to_list()
 
-tList = data["t"] # Same for all values of omega_r
-xList = data["x"]
-yList = data["y"]
-zList = data["z"]
-vxList = data["vx"]
-vyList = data["vy"]
-vzList = data["vz"]
+print(type(planetNames))
+print("planetNamesList (python script):"); print(planetNames)
+#planetNames = pd.read_csv(directory + "planet_names.csv")
+#print("planetNames (python script):"); print(planetNames)
 
-plot1, = plt.plot(xList, yList)#, label='velocityVerlet')
+nPlanets = len(planetNames) # Number of planets, excluding the Sun
+
+# Loop through all the planets:
+for i in range(nPlanets):
+    planetName = planetNames[i]
+    # File name for the current planet:
+    filename = planetName + ".csv"
+
+    filePath = os.path.join(directory, filename) # The full file path.
+    data = np.loadtxt(filePath, skiprows=1, delimiter=",")
+    # Get the columns of data as lists:
+    data = pd.DataFrame(data, columns=["t", "x", "y", "z", "vx", "vy", "vz"])
+    tList = data["t"]
+    xList = data["x"]
+    yList = data["y"]
+    zList = data["z"]
+    vxList = data["vx"]
+    vyList = data["vy"]
+    vzList = data["vz"]
+
+    # Plot the planet:
+    print("Plotting orbit: " + planetName + " ...")
+    plt.plot(xList, yList, label=planetName, linewidth = 0.8)
+
 # Plot the sun at the center of the solar system:
-plt.plot(0, 0, 'r.', markersize=20)
-#plt.plot([0], [0], 'r.', )
+plt.plot(0, 0, 'r.', markersize=12, label='Sun')
 
 '''
 # Plot all planet trajectories:
@@ -68,8 +90,9 @@ plt.grid()
 plt.axis('equal')
 plt.xlabel(r'$x$')
 plt.ylabel(r'$y$')
-plt.xlim(-1.5, 1.5)
-plt.ylim(-1.5, 1.5)
+plt.legend()
+#plt.xlim(-1.5, 1.5)
+#plt.ylim(-1.5, 1.5)
 plt.suptitle('Three-body problem, velocity Verlet')
 plt.show()
  

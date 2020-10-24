@@ -307,12 +307,3 @@ mat Solver::run_velocityVerletForceType(int functionNum, double tFinal, double d
     }
     return results;
 }
-
-void Solver::writeSolarSystemToFiles(){
-    // This function writes the results matrix from Solver::run_velocityVerletForceType()
-    // for multiple planets to individual .csv files, one for each planet.
-    // The results matrix is constructed such that the first N rows (after the header
-    // in the first row) contains the positions and velocities for the first planet (the
-    // Sun not included), the next N rows contains the positions and velocities for the
-    // second planet, and so on.
-}

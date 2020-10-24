@@ -101,15 +101,15 @@ double potentialEnergy(Planet current, Planet other, double G){
     return -G*other.mass*current.mass/norm(current.position - other.position);
 }
 
-void writeMatrixToFile(mat results, string filename, string directory){
+void writeMatrixToFile(mat results, string fileName, string directory){
     // Write the results (an Nx7 matrix) from an ODE solver to
     // a text file with 7 columns.
-    // filename: The full name of the file, e.g. "data.txt".
+    // fileName: The full name of the file, e.g. "data.txt".
     // directory: Specify the directory where the file is to be saved. E.g.
     // "../results/3a_earth_sun_system/" (include the final slash).
     
     ofstream ofile;
-    string filePath = directory + filename;
+    string filePath = directory + fileName;
 
     // Save matrix in CSV format with a header:
     field<string> header(results.n_cols);
@@ -129,6 +129,38 @@ void writeGeneralMatrixToCSV(mat results, field<string> columnLabels, string fil
     //results.save(csv_name("results.csv", header));
     results.save(csv_name(filePath, columnLabels));
 }
+
+void writeSolarSystemToFiles(mat resultsAllPlanets, int nTimesteps, int nPlanets, field<string> planetNames, string directory){
+    // This function writes the results matrix from Solver::run_velocityVerletForceType()
+    // for multiple planets to individual .csv files, one for each planet.
+    // The results matrix is constructed such that the first N rows (after the header
+    // in the first row) contains the positions and velocities for the first planet (the
+    // Sun not included), the next N rows contains the positions and velocities for the
+    // second planet, and so on.
+    // planetNames: A vector containing the names of the different planets. They should
+    // be in the same order as the planets are added to the Solver object (the solar
+    // system). This is going to be included in their respective file names.
+    // nTimesteps: The number of timesteps in the simulation.
+    // nPlanets: The number of planets.
+
+    // Create one textfile for each planet:
+    for (int i=0; i<=nPlanets; i++){
+        // File name:
+        string planetName = planetNames[i];
+        string fileName = planetName + ".csv";
+
+        int startIdx = 0 + i*nTimesteps; // Index of the first timestep
+        // of the current planet in the resultsAllPlanets matrix.
+        // Get the sub-matrix that corresponds to the results of the current
+        // planet (nTimesteps rows and all 7 columns):
+        mat resultsThisPlanet = resultsAllPlanets(span(startIdx, startIdx+(nTimesteps-1)), span(0, 6));
+        //resultsThisPlanet.print(planetName);
+
+        // Write the sub-matrix for the current planet to file:
+        writeMatrixToFile(resultsThisPlanet, fileName, directory);
+    }
+}
+
 
 double kmPerSec_to_auPerYear(double speed_kmPerSec){
     double oneKmPerSec_in_auPerYear = 0.21094502111897098; // This is 1 km/sec in units au/yr.
@@ -612,22 +644,20 @@ void task_3f_escape_velocity(double initialSpeed_kmPerSec, double G){
 void task_3g_three_body(double G){
     // Runs object oriented velocity Verlet. 
     double dt = 1e-4;
-    double tFinal = 0.75;
-    //int N = 5000; double tFinal = dt*N;
-    int N = round(tFinal/dt);
+    double tFinal = 50; int N = round(tFinal/dt);
+    //int N = 100; double tFinal = dt*N;
+    
     
     // Initial positions and velocities:
     // Sun:
-    vec sunPosition = vec("0 0 0"); 
+    vec sunPosition = vec("0 0 0");
     vec sunVelocity = vec("0 0 0");
     // Earth:
     vec initialPosition = vec("1 0 0");
     vec initialVelocity = initial_earth_velocity(initialPosition);
     // Jupiter: (Retrieved from NASA webpage)
-    //vec initPosJupiter = vec("....");
-    //vec initVelJupiter = vec("....");
-
-    initialVelocity.t().print("initialVelocity: ");
+    vec initPosJupiter = vec("5.2 0 0"); // au
+    vec initVelJupiter = vec("0 2.75522 0"); // au/yr
 
     // Initialize planets (the Sun must be initialized first):    
     Planet sun;
@@ -638,24 +668,34 @@ void task_3g_three_body(double G){
     double m_E = get_earth_mass();
     earth.init(m_E, initialPosition, initialVelocity);
 
-    //Planet jupiter;
-    //double m_J = 9.545536837e-4 // in solar masses
-    //jupiter.init(m_J, initPosJupiter, initVelJupiter);
+    Planet jupiter;
+    double massMultiplier = 1000; // How much we want to multiply Jupiter's mass by
+    double m_J = 9.545536837e-4 * massMultiplier; // in solar masses
+    jupiter.init(m_J, initPosJupiter, initVelJupiter);
 
     Solver my_solver;
     my_solver.init(N);
     my_solver.add(sun);
     my_solver.add(earth);
-    //my_solver.add(jupiter);
+    my_solver.add(jupiter);
 
-    // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
-    mat resultsVerlet = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
-    // my_solver.run_velocityVerlet(tFinal, dt, G); ? 
-    //resultsVerlet.print("resultsVerlet");
+    // Get the number of planets (excluding the Sun):
+    int nPlanets = my_solver.get_total_planets()-1;
 
-    string filename = "three_body.csv";
+    // The results matrix contains the results for all planets:
+    mat resultsAllPlanets = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
+
+    // The results directory:
     string directory = "../results/3g_three_body/";
-    writeMatrixToFile(resultsVerlet, filename, directory); 
+
+    // Store the planet names in a field:
+    field<string> planetNames(nPlanets);
+    planetNames(0) = "earth"; planetNames(1) = "jupiter";
+    // Save the planet names to a file so that the python script can get them:
+    planetNames.save(directory + "planet_names.csv");
+
+    // Write the results for the planets to files:
+    writeSolarSystemToFiles(resultsAllPlanets, N, nPlanets, planetNames, directory);
 }
 
 void task_3i_mercury_precession(double G){

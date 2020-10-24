@@ -39,7 +39,7 @@ for i in range(betaListLength):
     # Get the columns as lists:
     data = pd.DataFrame(data, columns=["t", "x", "y", "z", "vx", "vy", "vz"])
 
-    tList = data["t"] # Same for all values of omega_r
+    tList = data["t"]
     xList = data["x"]
     yList = data["y"]
     zList = data["z"]

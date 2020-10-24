@@ -17,6 +17,7 @@ double potentialEnergy(Planet current, Planet other, double G);
 
 void writeMatrixToFile(arma::mat results, std::string filename, std::string directory);
 void writeGeneralMatrixToCSV(arma::mat results, arma::field<std::string> columnLabels, std::string filename, std::string directory);
+void writeSolarSystemToFiles(arma::mat results, int nTimesteps, int nPlanets, arma::field<std::string> planetNames, std::string directory);
 
 arma::vec initial_earth_velocity(arma::vec initialPosition);
 
