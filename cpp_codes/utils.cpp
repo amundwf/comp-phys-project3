@@ -644,7 +644,7 @@ void task_3f_escape_velocity(double initialSpeed_kmPerSec, double G){
 void task_3g_three_body(double G){
     // Runs object oriented velocity Verlet. 
     double dt = 1e-4;
-    double tFinal = 50; int N = round(tFinal/dt);
+    double tFinal = 20; int N = round(tFinal/dt);
     //int N = 100; double tFinal = dt*N;
     
     
@@ -656,7 +656,7 @@ void task_3g_three_body(double G){
     vec initialPosition = vec("1 0 0");
     vec initialVelocity = initial_earth_velocity(initialPosition);
     // Jupiter: (Retrieved from NASA webpage)
-    vec initPosJupiter = vec("5.2 0 0"); // au
+    vec initPosJupiter = vec("5.2044 0 0"); // au
     vec initVelJupiter = vec("0 2.75522 0"); // au/yr
 
     // Initialize planets (the Sun must be initialized first):    
