@@ -88,7 +88,7 @@ vec gForceGenRelCorr(Planet planet1, Planet planet2, double G){
 
     double r = norm(pos2 - pos1); // Relative distance between the objects.
 
-    double forceStrength = (1 + 3*angMom1*(1/(r*r*c*c)))*(G*mass1*mass2)*(1/(r*r));   // Newton's gravitational law.
+    double forceStrength = (1 + (3*angMom1*angMom1/(r*r*c*c)) )*(G*mass1*mass2)*(1/(r*r));   // Newton's gravitational law.
 
     vec forceDirection = (pos2-pos1)/norm(pos2-pos1);   // This vector points *from*
     // object 1 and *towards* object 2, meaning that object 1 is influenced by object 2.
@@ -647,7 +647,7 @@ void task_3g_three_body(double G){
 void task_3i_mercury_precession(double G){
     // Runs object oriented velocity Verlet. 
 
-    double dt = 1e-3;
+    double dt = 1e-5;
     double tFinal = 100;
     int N = round(tFinal/dt);
     cout << N << endl;
