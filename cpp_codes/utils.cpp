@@ -698,6 +698,124 @@ void task_3g_three_body(double G){
     writeSolarSystemToFiles(resultsAllPlanets, N, nPlanets, planetNames, directory);
 }
 
+void task_3h_solar_system(double G){
+    // Runs object oriented velocity Verlet. 
+    double dt = 1e-4;
+    double tFinal = 5; int N = round(tFinal/dt);
+    //int N = 100; double tFinal = dt*N;
+    
+    // Planets: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto
+    
+    // Initial positions and velocities:
+    // Sun:
+    vec sunPosition = vec("0 0 0");
+    vec sunVelocity = vec("0 0 0");
+    // Mercury:
+    vec initPosMercury = vec("0.34439581 -0.15170017 -0.04498414");
+    vec initVelMercury = vec("2.21697462 9.83032311 0.59991024");
+    // Venus:
+    vec initPosVenus = vec("-0.18184097  0.70330564  0.01979342");
+    vec initVelVenus = vec("-7.19107188 -1.84968568  0.38953739");
+    // Earth:
+    vec initPosEarth = vec("9.26247918e-01 3.60984141e-01 6.66364627e-05");
+    vec initVelEarth = vec("-2.33799168e+00  5.85066441e+00 -2.18690746e-04");
+    // Mars:
+    vec initPosMars = vec("1.31769404  0.5095586  -0.02184232");
+    vec initVelMars = vec("-1.62286702  5.21232688  0.14909549");
+    // Jupiter: (Retrieved from NASA webpage)
+    vec initPosJupiter = vec("2.54375857 -4.4368376  -0.0385057"); // au
+    vec initVelJupiter = vec("2.35721704  1.50155279 -0.05896163"); // au/yr
+    // Saturn:
+    vec initPosSaturn = vec("5.13508534 -8.56941586 -0.05543229");
+    vec initVelSaturn = vec("1.63444679  1.04237547 -0.08332824");
+    // Uranus:
+    vec initPosUranus = vec("15.53976957 12.23945879 -0.15586173");
+    vec initVelUranus = vec("-0.89936374  1.0616034   0.01560822");
+    // Neptune:
+    vec initPosNeptune = vec("29.41117938 -5.47128787 -0.56513995");
+    vec initVelNeptune = vec("0.20218953  1.13396172 -0.02815956");
+    // Pluto:
+    vec initPosPluto = vec("13.82177646 -31.20040462  -0.65945608");
+    vec initVelPluto = vec("1.07229549  0.21866022 -0.33001162");
+
+    // Initialize the planets (the Sun must be initialized first):    
+    Planet sun;
+    double m_S = 1.0;
+    sun.init(m_S, sunPosition, sunVelocity);  
+
+    Planet mercury;
+    double m_Mercury = 1.6600955494091023e-07;
+    mercury.init(m_Mercury, initPosMercury, initVelMercury);
+
+    Planet venus;
+    double m_V = 2.447824993713855e-06;
+    mercury.init(m_V, initPosVenus, initVelVenus);
+
+    Planet earth;
+    double m_E = get_earth_mass();
+    earth.init(m_E, initPosEarth, initVelEarth);
+
+    Planet mars;
+    double m_Mars = 3.2271058586874533e-07;
+    mercury.init(m_Mars, initPosMars, initVelMars);
+
+    Planet jupiter;
+    double m_J = 9.545536837e-4; // in solar masses
+    jupiter.init(m_J, initPosJupiter, initVelJupiter);
+
+    Planet saturn;
+    double m_Saturn = 0.00028581342720643705;
+    mercury.init(m_Saturn, initPosSaturn, initVelSaturn);
+
+    Planet uranus;
+    double m_U = 4.365602212723158e-05;
+    mercury.init(m_U, initPosUranus, initVelUranus);
+
+    Planet neptune;
+    double m_N = 5.150264018104099e-05;
+    mercury.init(m_N, initPosNeptune, initVelNeptune);
+
+    Planet pluto;
+    double m_P = 6.552677897913e-09;
+    mercury.init(m_P, initPosPluto, initVelPluto);
+
+    Solver my_solver;
+    my_solver.init(N);
+    my_solver.add(sun);
+    my_solver.add(mercury);
+    my_solver.add(venus);
+    my_solver.add(earth);
+    my_solver.add(mars);
+    my_solver.add(jupiter);
+    my_solver.add(saturn);
+    my_solver.add(uranus);
+    my_solver.add(neptune);
+    my_solver.add(pluto);
+
+    // Get the number of planets (excluding the Sun):
+    int nPlanets = my_solver.get_total_planets()-1;
+
+    // The results matrix contains the results for all planets:
+    mat resultsAllPlanets = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
+
+    // The results directory:
+    string directory = "../results/3h_solar_system/";
+
+    // Store the planet names in a field:
+    field<string> planetNames(nPlanets);
+    planetNames(0) = "mercury"; planetNames(1) = "venus";
+    planetNames(2) = "earth"; planetNames(3) = "mars";
+    planetNames(4) = "jupiter"; planetNames(5) = "saturn";
+    planetNames(6) = "uranus"; planetNames(7) = "neptune";
+    planetNames(8) = "pluto";
+    // Save the planet names to a file so that the python script can get them:
+    planetNames.save(directory + "planet_names.csv");
+
+    // Write the results for the planets to files:
+    writeSolarSystemToFiles(resultsAllPlanets, N, nPlanets, planetNames, directory);
+}
+
+
 void task_3i_mercury_precession(double G){
     // Runs object oriented velocity Verlet. 
 

@@ -47,6 +47,8 @@ void task_3f_escape_velocity(double initialSpeed_kmPerSec, double G);
 
 void task_3g_three_body(double G);
 
+void task_3h_solar_system(double G);
+
 void task_3i_mercury_precession(double G);
 
 //void run_solarSystem();
