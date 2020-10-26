@@ -471,8 +471,7 @@ void task_3b_velocityVerlet(double G){
     my_solver.init(N);
     my_solver.add(sun);
     my_solver.add(earth);
-
-    // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
+    
     mat resultsVerlet = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
     string filename = "earth_sun_verlet.csv";
     string directory = "../results/3b_earth_sun_system/";
