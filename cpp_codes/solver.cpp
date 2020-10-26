@@ -141,7 +141,6 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
         results(x, span(1,3)) = current.position.t();
         results(x, span(4,6)) = current.velocity.t();
     }
-
     // Loop through all timesteps:
     for(int i=1; i<=N-1; i++){
         // Evaluate the new position for all planets.
@@ -151,7 +150,6 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
             current.previous_acceleration = current.acceleration;
             current.position += dt*current.velocity + 0.5*dt*dt*current.previous_acceleration;
         }
-
         // Evaluate the new acceleration for all planets.
         vec totalForce = vec("0 0 0"); // Initialize sum of forces as zero.
         vec force;
@@ -172,7 +170,6 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
             current.forceVector = totalForce;
             current.acceleration = current.forceVector / current.mass;
         }
-
         // Evaluate the new velocity for all planets.
         for (int j=1; j<total_planets; j++){
             Planet &current = all_planets[j];
@@ -214,12 +211,12 @@ mat Solver::run_velocityVerletForceType(int functionNum, double tFinal, double d
         t_all = join_cols(t_all, tList);
     }
     results.col(0) = t_all;
+    //t_all.print("(solver) t_all: ");
 
     // Calculate the initial acceleration of all planets.
     // start at j=1 since we don't want to update the Sun.
     for (int j=1; j <= total_planets-1; j++){
         Planet &current = all_planets[j];
-
         // Calculate force between current and all other planets.
         vec totalForce = vec("0 0 0");  // Instantiate it as zero force to start
         // with and then add the forces from the sun and all planets.
@@ -230,7 +227,6 @@ mat Solver::run_velocityVerletForceType(int functionNum, double tFinal, double d
             if (j==k){
                 continue;
             }
-
             // This is the other planet we are comparing current to.
             Planet &other = all_planets[k];
             // Get the force from the other planet on the current planet.

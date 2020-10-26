@@ -64,9 +64,17 @@ vec gForcePlanetBeta(Planet planet1, Planet planet2, double beta, double G){
     vec pos2 = planet2.position;
     double mass2 = planet2.mass;
 
+    pos1.print("(gForcePlanetBeta()) pos1:");
+    pos2.print("(gForcePlanetBeta()) pos2:");
+    // PROBLEM IN 3h DISCOVERED: pos2 (position of e.g. saturn or venus) is not
+    // instantiated; it simply prints as [matrix size: 0x1]. Why? Where does this
+    // fail to be instantiated as a 3D vector?
+
     double r = norm(pos2-pos1); // Relative distance between the objects.
     // NB: If r=1, then pow(r,beta) = r^beta = 1^beta = 1 for all values of
     // beta!
+
+    cout << "(gForcePlanetBeta()) r: " << r << endl;
 
     // The gravitational force, now with a different power (beta) in the
     // inverse law:
@@ -469,7 +477,9 @@ void task_3a_velocityVerlet(double G){
     double dt = 1e-4;
     cout << "tFinal: " << tFinal << " (years) \ndt: " << dt << endl;
 
+    // Get the results:
     mat resultsVerlet = run_velocityVerlet(tFinal, dt, G);
+
     string filename = "earth_sun_verlet.csv";
     string directory = "../results/3a_earth_sun_system/";
     writeMatrixToFile(resultsVerlet, filename, directory); 
@@ -644,8 +654,8 @@ void task_3f_escape_velocity(double initialSpeed_kmPerSec, double G){
 void task_3g_three_body(double G){
     // Runs object oriented velocity Verlet. 
     double dt = 1e-4;
-    double tFinal = 20; int N = round(tFinal/dt);
-    //int N = 100; double tFinal = dt*N;
+    //double tFinal = 5; int N = round(tFinal/dt);
+    int N = 50; double tFinal = dt*N;
     
     
     // Initial positions and velocities:
@@ -669,7 +679,7 @@ void task_3g_three_body(double G){
     earth.init(m_E, initialPosition, initialVelocity);
 
     Planet jupiter;
-    double massMultiplier = 1000; // How much we want to multiply Jupiter's mass by
+    double massMultiplier = 1; // How much we want to multiply Jupiter's mass by
     double m_J = 9.545536837e-4 * massMultiplier; // in solar masses
     jupiter.init(m_J, initPosJupiter, initVelJupiter);
 
@@ -702,7 +712,7 @@ void task_3h_solar_system(double G){
     // Runs object oriented velocity Verlet. 
     double dt = 1e-4;
     double tFinal = 5; int N = round(tFinal/dt);
-    //int N = 100; double tFinal = dt*N;
+    //int N = 1000; double tFinal = dt*N;
     
     // Planets: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto
     
@@ -722,7 +732,7 @@ void task_3h_solar_system(double G){
     // Mars:
     vec initPosMars = vec("1.31769404  0.5095586  -0.02184232");
     vec initVelMars = vec("-1.62286702  5.21232688  0.14909549");
-    // Jupiter: (Retrieved from NASA webpage)
+    // Jupiter:
     vec initPosJupiter = vec("2.54375857 -4.4368376  -0.0385057"); // au
     vec initVelJupiter = vec("2.35721704  1.50155279 -0.05896163"); // au/yr
     // Saturn:
@@ -742,42 +752,42 @@ void task_3h_solar_system(double G){
     Planet sun;
     double m_S = 1.0;
     sun.init(m_S, sunPosition, sunVelocity);  
-
+    
     Planet mercury;
     double m_Mercury = 1.6600955494091023e-07;
     mercury.init(m_Mercury, initPosMercury, initVelMercury);
-
+    
     Planet venus;
     double m_V = 2.447824993713855e-06;
-    mercury.init(m_V, initPosVenus, initVelVenus);
-
+    venus.init(m_V, initPosVenus, initVelVenus);
+    
     Planet earth;
     double m_E = get_earth_mass();
     earth.init(m_E, initPosEarth, initVelEarth);
-
+    
     Planet mars;
     double m_Mars = 3.2271058586874533e-07;
-    mercury.init(m_Mars, initPosMars, initVelMars);
-
+    mars.init(m_Mars, initPosMars, initVelMars);
+    
     Planet jupiter;
     double m_J = 9.545536837e-4; // in solar masses
     jupiter.init(m_J, initPosJupiter, initVelJupiter);
-
+    
     Planet saturn;
     double m_Saturn = 0.00028581342720643705;
-    mercury.init(m_Saturn, initPosSaturn, initVelSaturn);
+    saturn.init(m_Saturn, initPosSaturn, initVelSaturn);
 
     Planet uranus;
     double m_U = 4.365602212723158e-05;
-    mercury.init(m_U, initPosUranus, initVelUranus);
+    uranus.init(m_U, initPosUranus, initVelUranus);
 
     Planet neptune;
     double m_N = 5.150264018104099e-05;
-    mercury.init(m_N, initPosNeptune, initVelNeptune);
+    neptune.init(m_N, initPosNeptune, initVelNeptune);
 
     Planet pluto;
     double m_P = 6.552677897913e-09;
-    mercury.init(m_P, initPosPluto, initVelPluto);
+    pluto.init(m_P, initPosPluto, initVelPluto);
 
     Solver my_solver;
     my_solver.init(N);
@@ -794,25 +804,33 @@ void task_3h_solar_system(double G){
 
     // Get the number of planets (excluding the Sun):
     int nPlanets = my_solver.get_total_planets()-1;
+    cout << "nPlanets: " << nPlanets << endl;
 
     // The results matrix contains the results for all planets:
     mat resultsAllPlanets = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
+    //mat resultsAllPlanets = my_solver.run_velocityVerletBeta(tFinal, dt, 2.0, G);
 
     // The results directory:
     string directory = "../results/3h_solar_system/";
 
     // Store the planet names in a field:
     field<string> planetNames(nPlanets);
-    planetNames(0) = "mercury"; planetNames(1) = "venus";
-    planetNames(2) = "earth"; planetNames(3) = "mars";
-    planetNames(4) = "jupiter"; planetNames(5) = "saturn";
-    planetNames(6) = "uranus"; planetNames(7) = "neptune";
+    planetNames(0) = "mercury";
+    planetNames(1) = "venus";
+    planetNames(2) = "earth";
+    planetNames(3) = "mars";
+    planetNames(4) = "jupiter";
+    planetNames(5) = "saturn";
+    planetNames(6) = "uranus";
+    planetNames(7) = "neptune";
     planetNames(8) = "pluto";
+
     // Save the planet names to a file so that the python script can get them:
     planetNames.save(directory + "planet_names.csv");
 
     // Write the results for the planets to files:
     writeSolarSystemToFiles(resultsAllPlanets, N, nPlanets, planetNames, directory);
+    cout << "debugging: end of utils.cpp\n";
 }
 
 
@@ -845,7 +863,6 @@ void task_3i_mercury_precession(double G){
     my_solver.add(sun);
     my_solver.add(mercury);
 
-    // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
     mat resultsVerlet = my_solver.run_velocityVerletForceType(1, tFinal, dt, G);
     string filename = "mercury_sun_verlet.csv";
     string directory = "../results/3i_mercury_precession/";

@@ -20,7 +20,9 @@ int main(){
     //double initialSpeed_kmPerSec = 40;
     //task_3f_escape_velocity(initialSpeed_kmPerSec, G);
 
-    task_3g_three_body(G);
+    //task_3g_three_body(G);
+
+    task_3h_solar_system(G);
 
     //task_3i_mercury_precession(G);
 
