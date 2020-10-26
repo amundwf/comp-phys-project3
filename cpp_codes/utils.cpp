@@ -64,17 +64,7 @@ vec gForcePlanetBeta(Planet planet1, Planet planet2, double beta, double G){
     vec pos2 = planet2.position;
     double mass2 = planet2.mass;
 
-    pos1.print("(gForcePlanetBeta()) pos1:");
-    pos2.print("(gForcePlanetBeta()) pos2:");
-    // PROBLEM IN 3h DISCOVERED: pos2 (position of e.g. saturn or venus) is not
-    // instantiated; it simply prints as [matrix size: 0x1]. Why? Where does this
-    // fail to be instantiated as a 3D vector?
-
     double r = norm(pos2-pos1); // Relative distance between the objects.
-    // NB: If r=1, then pow(r,beta) = r^beta = 1^beta = 1 for all values of
-    // beta!
-
-    cout << "(gForcePlanetBeta()) r: " << r << endl;
 
     // The gravitational force, now with a different power (beta) in the
     // inverse law:
@@ -168,7 +158,6 @@ void writeSolarSystemToFiles(mat resultsAllPlanets, int nTimesteps, int nPlanets
         writeMatrixToFile(resultsThisPlanet, fileName, directory);
     }
 }
-
 
 double kmPerSec_to_auPerYear(double speed_kmPerSec){
     double oneKmPerSec_in_auPerYear = 0.21094502111897098; // This is 1 km/sec in units au/yr.
@@ -338,8 +327,7 @@ mat forwardEuler(double tFinal, double dt, double m_SI, vec initialPosition, vec
         results(i, span(4,6)) = velocity.t();
 
         // Update the acceleration for the next time step (to update
-        // the velocity):
-        
+        // the velocity): 
         FVec = gForceVector(G, m, m_S, position, sunPosition);
         //FVec = gForceVector(G, m_E, m_S, position, sunPosition) * (1/2.976e-19); // Debugging (the factor is to check if G must be of other units.)
         acceleration = FVec/m;
@@ -514,7 +502,6 @@ void task_3b_velocityVerlet(double G){
     my_solver.add(sun);
     my_solver.add(earth);
 
-    // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
     mat resultsVerlet = my_solver.run_velocityVerletForceType(0, tFinal, dt, G);
     string filename = "earth_sun_verlet.csv";
     string directory = "../results/3b_earth_sun_system/";
@@ -573,14 +560,10 @@ void task_3e_force(double G){
     // Initial position and velocity of Earth:
     vec initialPosition_E = vec("1 0 0");
     // If doing the first part of 3e, choose circular orbit velocity:
-    vec initialVelocity_E = initial_earth_velocity(initialPosition_E);
+    //vec initialVelocity_E = initial_earth_velocity(initialPosition_E);
     // If doing the second part of 3e, choose speed 5 AU/yr:
-    //vec initialVelocity_E = vec("0 5 0");
+    vec initialVelocity_E = vec("0 5 0");
 
-    // initialVelocity_E = initial_earth_velocity_beta(initialPosition);
-    // ^ Does the velocity need to be different? Do we want to keep the same
-    // velocity or do we want to change the velocity to match the new centripetal
-    // acceleration from the new force law?
     // Position and velocity of the Sun:
     vec sunPosition = vec("0 0 0"); 
     vec sunVelocity = vec("0 0 0");
@@ -615,11 +598,6 @@ void task_3e_force(double G){
         // Write the results matrix to the results file:
         writeMatrixToFile(results, filename, directory);
     }
-
-    // Write the number of beta values to a file so that the python
-    // script for this task can automatically read the number of
-    // beta values?:
-    // writeToFile('numBetaValues', betaList.n_elem); // <-- or something like that
 }
 
 void task_3f_escape_velocity(double initialSpeed_kmPerSec, double G){
@@ -837,7 +815,7 @@ void task_3h_solar_system(double G){
 void task_3i_mercury_precession(double G){
     // Runs object oriented velocity Verlet. 
 
-    double dt = 1e-3;
+    double dt = 1e-5;
     double tFinal = 100;
     int N = round(tFinal/dt);
     cout << N << endl;
@@ -863,6 +841,7 @@ void task_3i_mercury_precession(double G){
     my_solver.add(sun);
     my_solver.add(mercury);
 
+    // 3D matrix instead? One layer for each matrix? (from run_velocityVerlet)
     mat resultsVerlet = my_solver.run_velocityVerletForceType(1, tFinal, dt, G);
     string filename = "mercury_sun_verlet.csv";
     string directory = "../results/3i_mercury_precession/";
@@ -871,4 +850,13 @@ void task_3i_mercury_precession(double G){
     mat momEnergyMatrix = my_solver.get_angMomentum_energy_mat();
     string filename1 = "mercury_sun_energy.csv";
     momEnergyMatrix.save(csv_name(directory + filename1));
+
+    vector<Planet> all_planets = my_solver.get_all_planets();
+    mat peri = my_solver.perihelion_mat_solver;
+    string filename_peri = "perihelion.csv";
+
+    field<string> header(peri.n_cols);
+    header(0) = "x"; header(1) = "y"; header(2) = "z";
+    writeGeneralMatrixToCSV(peri, header, filename_peri, directory);
+    
 }
