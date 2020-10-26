@@ -12,15 +12,23 @@ using namespace arma;
 
 void Solver::init(int N){
     total_planets = 0;
-    angMomentum_energy_mat = mat(N,4);
+    
     // angMomentum_energy_mat: 4 columns: total kinetic energy, 
     // total potential energy, total mechanical energy, total angular
     // momentum.
+    angMomentum_energy_mat = mat(N,4);
+    
+    // We don't know the exact dimension that perihelion mat solver 
+    // should be, therefore its set to 1000. If we had time we would
+    // add some code to calculate the number of revolutions that 
+    // a planet would make in the time given.
+    perihelion_mat_solver = mat(1000,3);
+    revolution = 0;
+     
 }
 
 void Solver::add(Planet newPlanet){
-    // cout << this->total_planets << endl;
-    //this->total_planets += 1;
+    // Add the planet object and increase the total planets.
     total_planets += 1;
     all_planets.push_back(newPlanet);
 }
@@ -76,9 +84,10 @@ mat Solver::get_angMomentum_energy_mat(){
 }
 
 mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double G){
+    // Runs velocity verlet for a given beta value which is the exponent of r in
+    // the force equation. 
+
     int N = round(tFinal/dt);   // Number of timesteps.
-    //cout << "Number of timesteps: N = " << N << endl;
-    //cout << "Number of planets = " << total_planets << endl;
 
     // Set up matrix to contain all planet info.
     mat results = mat(N*(total_planets-1), 7);
@@ -116,15 +125,8 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
         }
         current.forceVector = totalForce;
         current.acceleration = current.forceVector / current.mass;
-
-        /*
-        // Print some planet info.
-        cout << "\nPlanet number: " << j << endl;
-        cout <<"Intial acceleration: " << current.acceleration.t() << endl;
-        cout <<"Intial forceVector: " << current.forceVector.t() << endl;
-        cout <<"current.mass: " << current.mass << endl;
-        */
     }
+
     // Calculate initial total energy.
     totalEnergySystem(0, G);
     totalAngularMomentumSystem(0);
@@ -135,12 +137,11 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
         //Planet &current = all_planets[i];
         Planet current = all_planets[i];
 
-        //vec currentPosition = current.getPosition();
-        //vec currentVelocity = current.getVelocity();
         int x = N*(i-1);
         results(x, span(1,3)) = current.position.t();
         results(x, span(4,6)) = current.velocity.t();
     }
+
     // Loop through all timesteps:
     for(int i=1; i<=N-1; i++){
         // Evaluate the new position for all planets.
@@ -150,6 +151,7 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
             current.previous_acceleration = current.acceleration;
             current.position += dt*current.velocity + 0.5*dt*dt*current.previous_acceleration;
         }
+
         // Evaluate the new acceleration for all planets.
         vec totalForce = vec("0 0 0"); // Initialize sum of forces as zero.
         vec force;
@@ -170,6 +172,7 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
             current.forceVector = totalForce;
             current.acceleration = current.forceVector / current.mass;
         }
+
         // Evaluate the new velocity for all planets.
         for (int j=1; j<total_planets; j++){
             Planet &current = all_planets[j];
@@ -192,11 +195,13 @@ mat Solver::run_velocityVerletBeta(double tFinal, double dt, double beta, double
 
 mat Solver::run_velocityVerletForceType(int functionNum, double tFinal, double dt, double G){
     // General solver for velocity Verlet, i.e you can give it the force
-    // function of your choice. 
+    // function of your choice. 0 is for normal Newtonian force, 1 is for
+    // adding General Relativistic term.
 
     array<function<vec(Planet current, Planet other, double G)>, 2> functions = {&gForceVectorPlanet, &gForceGenRelCorr};
-    // Beta has an extra variable, could init beta as None. and use *args like 
-    // in python.
+    // In future Solver::run_velocityVerletBeta could be assimilated
+    // into this list of functions and would save around 100 lines of 
+    // code.
 
     int N = round(tFinal/dt);
 
@@ -211,12 +216,12 @@ mat Solver::run_velocityVerletForceType(int functionNum, double tFinal, double d
         t_all = join_cols(t_all, tList);
     }
     results.col(0) = t_all;
-    //t_all.print("(solver) t_all: ");
 
     // Calculate the initial acceleration of all planets.
     // start at j=1 since we don't want to update the Sun.
     for (int j=1; j <= total_planets-1; j++){
         Planet &current = all_planets[j];
+
         // Calculate force between current and all other planets.
         vec totalForce = vec("0 0 0");  // Instantiate it as zero force to start
         // with and then add the forces from the sun and all planets.
@@ -227,6 +232,7 @@ mat Solver::run_velocityVerletForceType(int functionNum, double tFinal, double d
             if (j==k){
                 continue;
             }
+
             // This is the other planet we are comparing current to.
             Planet &other = all_planets[k];
             // Get the force from the other planet on the current planet.
@@ -259,6 +265,10 @@ mat Solver::run_velocityVerletForceType(int functionNum, double tFinal, double d
         // start at j=1 since we don't want to update the Sun.
         for (int j=1; j<total_planets; j++){
             Planet &current = all_planets[j];
+
+            // Store the old position just for the perihelion calculation.
+            current.old_position = current.position;
+
             current.previous_acceleration = current.acceleration;
             current.position += dt*current.velocity + 0.5*dt*dt*current.previous_acceleration;
         }
@@ -298,8 +308,49 @@ mat Solver::run_velocityVerletForceType(int functionNum, double tFinal, double d
         }
 
         // Print the total energy to results.
-        //totalEnergySystem(i, G);
-        //totalAngularMomentumSystem(i);
+        totalEnergySystem(i, G);
+        totalAngularMomentumSystem(i);
+
+        // Evaluate the perihelion of each planet.
+        for (int j=1; j<total_planets; j++){
+            Planet current = all_planets[j];
+            vec perihelion_pos = eval_perihelion(current);
+
+            if (perihelion_pos.n_elem == 3){
+                perihelion_mat_solver(revolution, span(0,2)) = perihelion_pos.t();
+            }
+        }
     }
     return results;
+}
+
+vec Solver::eval_perihelion(Planet &current){
+    // Evaluate the minimum relative distance of the planet
+    // to the Sun. Compare this to the perihelion at the
+    // previous time step. Return the perihelion position if 
+    // the criteria is met otherwise return an empty vector.
+
+    vec pos1 = current.position;
+    vec sun_pos = all_planets[0].position;
+    double r = norm(sun_pos - pos1);
+    
+    if (r < current.perihelion){
+        current.perihelion = r;
+        current.perihelion_pos = pos1;
+    }
+
+    vec empty = vec("0 0");
+
+    // If the planet crosses the positive x axis, return and reset the perihelion.
+    // otherwise return an empty vector.
+    if ( (signbit(current.old_position[1]*current.position[1])) && !(signbit(current.position[0])) ){
+        // Store and reset perihelion.
+
+        revolution += 1;
+        current.perihelion = 500.0; // Reset to a large value.
+        return current.perihelion_pos;
+    }
+    else {
+        return empty;
+    }
 }
