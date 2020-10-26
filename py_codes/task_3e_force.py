@@ -5,30 +5,32 @@ import re
 import os
 
 
-### Optional: Run the C++ program to get an updated data file. 
-# Compile and run the C++ files (this is exactly what is in the makefile):
-os.system("echo compiling C++ codes...")
-os.system("g++ -o main.out ../cpp_codes/main.cpp ../cpp_codes/utils.cpp ../cpp_codes/planet.cpp ../cpp_codes/solver.cpp -larmadillo")
-os.system("echo executing...")
-os.system("./main.out")
-###
+runCppCode = True
+if runCppCode == True:  
+    # Compile and run the C++ files (this is exactly what is in the makefile):
+    os.system("echo compiling C++ codes...")
+    os.system("g++ -o main.out ../cpp_codes/main.cpp ../cpp_codes/utils.cpp ../cpp_codes/planet.cpp ../cpp_codes/solver.cpp -larmadillo")
+    os.system("echo executing...")
+    os.system("./main.out")
+
 
 # Read the comma-separated data files (two columns, x and y):
 directory = "../results/3e_force/"
 betaFilePath = directory + "betaList.csv"
 
 # Load the list of beta values:
-betaValues = np.loadtxt(betaFilePath, skiprows=1, delimiter=",")
+betaValues = np.loadtxt(betaFilePath, skiprows=0, delimiter=",")
 betaValues = pd.DataFrame(betaValues, columns=["beta"])
 betaList = betaValues["beta"]
 print(betaList)
 
 betaListLength = len(betaList) # Number of beta values
 # Retrieve all the results from files for the different beta values:
-for beta in betaList:
+for i in range(betaListLength):
     # Match the file names in the results folder for 
     # task 3e:
-    betaStr = format(beta,'.1f')
+    beta = betaList[i]
+    betaStr = format(beta,'.2f')
     filename = '3e_force_beta' + betaStr + '.csv'
     filePath = os.path.join(directory, filename) # The full file path.
 
@@ -37,7 +39,7 @@ for beta in betaList:
     # Get the columns as lists:
     data = pd.DataFrame(data, columns=["t", "x", "y", "z", "vx", "vy", "vz"])
 
-    tList = data["t"] # Same for all values of omega_r
+    tList = data["t"]
     xList = data["x"]
     yList = data["y"]
     zList = data["z"]
@@ -46,21 +48,22 @@ for beta in betaList:
     vzList = data["vz"]
 
     # Plot each orbit, for all different values of beta:
-    plot1, = plt.plot(xList, yList, label= "beta = " + betaStr)
+    plot1, = plt.plot(xList, yList, label= "beta = " + betaStr, linewidth = 0.9)
 
 
 # Plot the sun at the center of the solar system:
-plt.plot(0, 0, 'r.', markersize=20)
+plt.plot(0, 0, 'r.', markersize=12, label = 'Sun')
 
+plt.axis('equal')
+plt.xlabel(r'$x$ (au)')
+plt.ylabel(r'$y$ (au)')
+lim = 2
+plt.xlim(-lim, lim)
+plt.ylim(-lim, lim)
 plt.grid()
 plt.legend()
-plt.axis('equal')
-plt.xlabel(r'$x$')
-plt.ylabel(r'$y$')
-plt.xlim(-1.5, 1.5)
-plt.ylim(-1.5, 1.5)
 
-plt.suptitle('Sun-Earth system with varying force law (different values of beta)')
+plt.suptitle('The Sun-Earth system with varying force law')
 plt.show()
 
  
