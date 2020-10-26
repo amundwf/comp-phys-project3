@@ -22,6 +22,8 @@ int main(){
 
     //task_3g_three_body(G);
 
+    //task_3h_solar_system(G);
+
     task_3i_mercury_precession(G);
 
     return 0;
