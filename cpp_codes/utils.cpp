@@ -86,7 +86,7 @@ vec gForceGenRelCorr(Planet planet1, Planet planet2, double G){
 
     double r = norm(pos2 - pos1); // Relative distance between the objects.
 
-    double forceStrength = (1 + 3*angMom1*(1/(r*r*c*c)))*(G*mass1*mass2)*(1/(r*r));   // Newton's gravitational law.
+    double forceStrength = (1 + (3*angMom1*angMom1/(r*r*c*c)) )*(G*mass1*mass2)*(1/(r*r));   // Newton's gravitational law.
 
     vec forceDirection = (pos2-pos1)/norm(pos2-pos1);   // This vector points *from*
     // object 1 and *towards* object 2, meaning that object 1 is influenced by object 2.
@@ -99,15 +99,15 @@ double potentialEnergy(Planet current, Planet other, double G){
     return -G*other.mass*current.mass/norm(current.position - other.position);
 }
 
-void writeMatrixToFile(mat results, string fileName, string directory){
+void writeMatrixToFile(mat results, string filename, string directory){
     // Write the results (an Nx7 matrix) from an ODE solver to
     // a text file with 7 columns.
-    // fileName: The full name of the file, e.g. "data.txt".
+    // filename: The full name of the file, e.g. "data.txt".
     // directory: Specify the directory where the file is to be saved. E.g.
     // "../results/3a_earth_sun_system/" (include the final slash).
     
     ofstream ofile;
-    string filePath = directory + fileName;
+    string filePath = directory + filename;
 
     // Save matrix in CSV format with a header:
     field<string> header(results.n_cols);
@@ -327,7 +327,7 @@ mat forwardEuler(double tFinal, double dt, double m_SI, vec initialPosition, vec
         results(i, span(4,6)) = velocity.t();
 
         // Update the acceleration for the next time step (to update
-        // the velocity): 
+        // the velocity):
         FVec = gForceVector(G, m, m_S, position, sunPosition);
         //FVec = gForceVector(G, m_E, m_S, position, sunPosition) * (1/2.976e-19); // Debugging (the factor is to check if G must be of other units.)
         acceleration = FVec/m;
@@ -810,7 +810,6 @@ void task_3h_solar_system(double G){
     writeSolarSystemToFiles(resultsAllPlanets, N, nPlanets, planetNames, directory);
     cout << "debugging: end of utils.cpp\n";
 }
-
 
 void task_3i_mercury_precession(double G){
     // Runs object oriented velocity Verlet. 
