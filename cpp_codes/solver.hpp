@@ -12,10 +12,14 @@
 
 class Solver{
 private:
-    int total_planets; // The number of planets added (including the Sun)
+    int total_planets;
     std::vector<Planet> all_planets;
     arma::mat angMomentum_energy_mat;
+    int revolution;
+    
+    
 public:
+    arma::mat perihelion_mat_solver;
     // Functions
     void init(int N);
     void add(Planet newPlanet);
@@ -26,5 +30,6 @@ public:
     std::vector<Planet> get_all_planets();
     void totalEnergySystem(int i, double G);
     void totalAngularMomentumSystem(int i);
+    arma::vec eval_perihelion(Planet &current);
 };
 #endif
